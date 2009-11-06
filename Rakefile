@@ -5,34 +5,20 @@ require 'pathname'
 
 def run_command(command)
   ['meta', 'core', 'expectations', 'mocks'].each do |dir|
-    FileUtils.cd(ReposPath) do
+    path = ReposPath.join(dir)
+    FileUtils.cd(path) do
       puts "====================================="
-      puts "Running [#{command}] in #{ReposPath.join(dir)}"
+      puts "Running [#{command}] in #{path}"
       puts "====================================="
-      FileUtils.cd(ReposPath.join(dir)) do
-        system command
-      end
+      system command
+      exit(1) unless $?.success?
       puts 
     end
   end
 end
 
-task :clobber do
-  rm_rf 'pkg'
-end
-
-task :spec do
-  run_command 'rake'
-end
-
-task :default => :spec
-
-
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
-
-def make_repos_directory
-end
 
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
@@ -65,3 +51,14 @@ namespace :git do
     end
   end
 end
+
+task :clobber do
+  rm_rf 'pkg'
+  rm_rf 'repos'
+end
+
+task :spec do
+  run_command 'rake'# 'rake --trace --verbose'
+end
+
+task :default => ['git:clone', :spec]
