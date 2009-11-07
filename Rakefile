@@ -45,7 +45,7 @@ namespace :git do
     FileUtils.cd(ReposPath) do
       ['core', 'expectations', 'mocks', 'meta'].each do |repo|
         unless File.exists?(repo)
-          system "git clone git://github.com/rspec/#{repo}.git"
+          system "git clone git@github.com:rspec/#{repo}.git"
         end
       end
     end
