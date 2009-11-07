@@ -3,25 +3,58 @@ require 'rake'
 require 'fileutils'
 require 'pathname'
 
+Projects = ['meta', 'core', 'expectations', 'mocks']
+BaseRspecPath = Pathname.new(Dir.pwd)
+ReposPath = BaseRspecPath.join('repos')
+
 def run_command(command)
-  ['meta', 'core', 'expectations', 'mocks'].each do |dir|
+  Projects.each do |dir|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       puts "====================================="
       puts "Running [#{command}] in #{path}"
       puts "====================================="
       system command
-      exit(1) unless $?.success?
       puts 
     end
   end
 end
 
-BaseRspecPath = Pathname.new(Dir.pwd)
-ReposPath = BaseRspecPath.join('repos')
-
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
+end
+
+def build_version_string(project_name, major, minor, tiny, pre)
+version = <<versionstring
+module Rspec # :nodoc:
+  module #{project_name.capitalize} # :nodoc:
+    module Version # :nodoc:
+      unless defined?(MAJOR)
+        MAJOR  = #{major}
+        MINOR  = #{minor}
+        TINY   = #{tiny}
+        PRE    = '#{pre}'
+
+        STRING = [MAJOR, MINOR, TINY, PRE].compact.join('.')
+
+        SUMMARY = "rspec-#{project_name.downcase} " + STRING
+      end
+    end
+  end
+end
+versionstring
+end
+
+task :write_version do
+  major, minor, tiny, pre = ENV['MAJOR'], ENV['MINOR'], ENV['TINY'], ENV['PRE']
+  raise("You must supply MAJOR, MINOR, TINY, and PRE versions") if [major, minor, tiny, pre].any? { |v| v.nil? } 
+  Projects.each do |project|
+    version_string = build_version_string(project, major, minor, tiny, pre) 
+    file = "repos/#{project}/lib/rspec/#{project}/version.rb"
+    FileUtils.rm_rf file
+    File.open(file, "w+") { |f| f << version_string }
+    puts "Writing out version #{major}.#{minor}.#{tiny}.#{pre} for #{project}"
+  end
 end
 
 namespace :git do
@@ -58,7 +91,11 @@ task :clobber do
 end
 
 task :spec do
-  run_command 'rake'# 'rake --trace --verbose'
+  run_command 'rake'
+end
+
+task :gemspec do
+  run_command 'rake gemspec'
 end
 
 task :default => ['git:clone', :spec]
