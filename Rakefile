@@ -65,7 +65,7 @@ namespace :gem do
   end
 
   desc "Build gems"
-  task :build => :spec do
+  task :build => [:clean_pkg_directories, :spec] do
     run_command "gem build *.gemspec && mkdir pkg && mv *.gem pkg"
   end
 
@@ -74,10 +74,10 @@ namespace :gem do
   end
 
   desc "Install all gems locally"
-  task :install => [:clean_pkg_directories, :build] do
+  task :install => :build do
     Projects.each do |project|
       file = Dir["#{Dir.pwd}/repos/#{project}/pkg/*"].first
-      run_command "gem install --force #{file}"
+      system "gem install --force #{file}"
     end
   end
 
@@ -85,6 +85,14 @@ namespace :gem do
   task :uninstall do
     Projects.each do |project|
       system "gem uninstall --all --executables --ignore-dependencies rspec-#{project}" 
+    end
+  end
+
+  desc "Release new versions to gemcutter"
+  task :release => :build do
+    Projects.each do |project|
+      file = Dir["#{Dir.pwd}/repos/#{project}/pkg/*"].first
+      system "gem push #{file}"
     end
   end
 end
