@@ -3,7 +3,7 @@ require 'rake'
 require 'fileutils'
 require 'pathname'
 
-Projects = ['meta', 'core', 'expectations', 'mocks']
+Projects = ['core', 'expectations', 'mocks', 'meta']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
@@ -45,26 +45,65 @@ end
 versionstring
 end
 
-task :write_version do
-  major, minor, tiny, pre = ENV['MAJOR'], ENV['MINOR'], ENV['TINY'], ENV['PRE']
-  raise("You must supply MAJOR, MINOR, TINY, and PRE versions") if [major, minor, tiny, pre].any? { |v| v.nil? } 
-  Projects.each do |project|
-    version_string = build_version_string(project, major, minor, tiny, pre) 
-    file = "repos/#{project}/lib/rspec/#{project}/version.rb"
-    FileUtils.rm_rf file
-    File.open(file, "w+") { |f| f << version_string }
-    puts "Writing out version #{major}.#{minor}.#{tiny}.#{pre} for #{project}"
+namespace :gem do
+  desc "Write out a new version constant for each project.  You must supply MAJOR, MINOR, TINY, and PRE."
+  task :write_version do
+    major, minor, tiny, pre = ENV['MAJOR'], ENV['MINOR'], ENV['TINY'], ENV['PRE']
+    raise("You must supply MAJOR, MINOR, TINY, and PRE versions") if [major, minor, tiny, pre].any? { |v| v.nil? } 
+    Projects.each do |project|
+      version_string = build_version_string(project, major, minor, tiny, pre) 
+      file = "repos/#{project}/lib/rspec/#{project}/version.rb"
+      FileUtils.rm_rf file
+      File.open(file, "w+") { |f| f << version_string }
+      puts "Writing out version #{major}.#{minor}.#{tiny}.#{pre} for #{project}"
+    end
+  end
+
+  desc "Rebuild gemspecs"
+  task :spec do
+    run_command "rake gemspec"
+  end
+
+  desc "Build gems"
+  task :build => :spec do
+    run_command "gem build *.gemspec && mkdir pkg && mv *.gem pkg"
+  end
+
+  task :clean_pkg_directories do
+    run_command "rm -rf pkg"
+  end
+
+  desc "Install all gems locally"
+  task :install => [:clean_pkg_directories, :build] do
+    Projects.each do |project|
+      file = Dir["#{Dir.pwd}/repos/#{project}/pkg/*"].first
+      run_command "gem install --force #{file}"
+    end
+  end
+
+  desc "Uninstall gems locally"
+  task :uninstall do
+    Projects.each do |project|
+      system "gem uninstall --all --executables --ignore-dependencies rspec-#{project}" 
+    end
+  end
+end
+
+namespace :dev do
+  desc "Pair dev, you must supply the PAIR1, PAIR2 arguments"
+  task :pair do
+    raise("You must supply PAIR1, and PAIR2 to pair dev") unless ENV['PAIR1'] && ENV['PAIR2']
+    run_command "pair #{ENV['PAIR1']} #{ENV['PAIR2']}"
+  end
+
+  desc "Solo dev, removes any git pair markers"
+  task :solo do
+    run_command "pair"
   end
 end
 
 namespace :git do
-
-  { :status => nil,
-    :pull => '--rebase',
-    :push => nil,
-    :reset => '--hard',
-    :diff => nil
-  }.each do |command, options|
+  { :status => nil, :pull => '--rebase', :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
       run_command "git #{command} #{options}".strip
@@ -76,12 +115,18 @@ namespace :git do
   desc "git clone all the repos the first time"
   task :clone => :make_repos_directory do
     FileUtils.cd(ReposPath) do
-      ['core', 'expectations', 'mocks', 'meta'].each do |repo|
+      Projects.each do |repo|
         unless File.exists?(repo)
           system "git clone git@github.com:rspec/#{repo}.git"
         end
       end
     end
+  end
+
+  desc "git commit all the repos with the same commit message"
+  task :commit do
+    raise("You must supply a MESSAGE to commit") unless ENV['MESSAGE']
+    run_command "git commit -am '#{ENV['MESSAGE']}'"
   end
 end
 
