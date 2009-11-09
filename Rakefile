@@ -122,10 +122,12 @@ namespace :git do
 
   desc "git clone all the repos the first time"
   task :clone => :make_repos_directory do
+    url_prefix = `git config --get remote.origin.url`[%r{(^.*)/dev\.git}, 1]
+
     FileUtils.cd(ReposPath) do
       Projects.each do |repo|
         unless File.exists?(repo)
-          system "git clone git@github.com:rspec/#{repo}.git"
+          system "git clone #{url_prefix}/#{repo}.git"
         end
       end
     end
