@@ -141,8 +141,7 @@ namespace :git do
 end
 
 task :clobber do
-  rm_rf 'pkg'
-  rm_rf 'repos'
+  run_command "rake clobber"
 end
 
 task :spec do
