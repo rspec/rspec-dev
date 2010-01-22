@@ -12,7 +12,9 @@ def run_command(command)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       puts "====================================="
-      puts "Running [#{command}] in #{path}"
+      dirname = File.dirname(__FILE__)
+      puts "cd .#{path.sub(/#{dirname}/,'')}"
+      puts "$ " << command
       puts "====================================="
       system command
       puts 
