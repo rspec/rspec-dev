@@ -67,7 +67,7 @@ namespace :gem do
   end
 
   desc "Build gems"
-  task :build => [:clean_pkg_directories, :spec] do
+  task :build => [:clean_pkg_directories] do
     run_command "gem build *.gemspec && mkdir pkg && mv *.gem pkg"
   end
 
