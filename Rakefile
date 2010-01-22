@@ -39,7 +39,7 @@ module Rspec # :nodoc:
 
         STRING = [MAJOR, MINOR, TINY, PRE].compact.join('.')
 
-        SUMMARY = "rspec-#{project_name.downcase} " + STRING
+        SUMMARY = "#{project_name.downcase} " + STRING
       end
     end
   end
@@ -86,7 +86,7 @@ namespace :gem do
   desc "Uninstall gems locally"
   task :uninstall do
     Projects.each do |project|
-      system "gem uninstall --all --executables --ignore-dependencies rspec-#{project}" 
+      system "gem uninstall --all --executables --ignore-dependencies #{project}" 
     end
   end
 
