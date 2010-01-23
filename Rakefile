@@ -121,6 +121,7 @@ namespace :git do
   end
 
   task :st => :status
+  task :update => :pull
 
   desc "git clone all the repos the first time"
   task :clone => :make_repos_directory do
