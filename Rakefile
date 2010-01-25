@@ -1,9 +1,10 @@
 require 'rubygems'
+gem 'jeweler', '>= 1.4.0'
 require 'rake'
 require 'fileutils'
 require 'pathname'
 
-Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails']
+Projects = ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec', 'rspec-rails']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
@@ -68,7 +69,7 @@ namespace :gem do
 
   desc "Build gems"
   task :build => [:clean_pkg_directories] do
-    run_command "gem build *.gemspec && mkdir pkg && mv *.gem pkg"
+    run_command "rake build"
   end
 
   task :clean_pkg_directories do
@@ -77,25 +78,12 @@ namespace :gem do
 
   desc "Install all gems locally"
   task :install => :build do
-    Projects.each do |project|
-      file = Dir["#{Dir.pwd}/repos/#{project}/pkg/*"].first
-      system "gem install --force #{file}"
-    end
+    run_command "sudo rake install"
   end
 
   desc "Uninstall gems locally"
   task :uninstall do
-    Projects.each do |project|
-      system "gem uninstall --all --executables --ignore-dependencies #{project}" 
-    end
-  end
-
-  desc "Release new versions to gemcutter"
-  task :release => :build do
-    Projects.each do |project|
-      file = Dir["#{Dir.pwd}/repos/#{project}/pkg/*"].first
-      system "gem push #{file}"
-    end
+    run_command "gem uninstall --all --executables --ignore-dependencies #{project}" 
   end
 end
 
@@ -155,4 +143,4 @@ task :gemspec do
   run_command 'rake gemspec'
 end
 
-task :default => ['git:clone', :spec]
+task :default => ['git:clone', 'gem:install', :spec]
