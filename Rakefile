@@ -83,7 +83,12 @@ namespace :gem do
 
   desc "Uninstall gems locally"
   task :uninstall do
-    run_command "gem uninstall --all --executables --ignore-dependencies #{project}" 
+    Projects.each do |project|
+      path = ReposPath.join(project)
+      FileUtils.cd(path) do
+        system "gem uninstall --all --executables --ignore-dependencies #{project}" 
+      end
+    end
   end
 end
 
