@@ -11,3 +11,9 @@ in each, which will run their specs.
 After the initial clone you can run `rake git:pull` to update to the latest bits.
 
 Run `rake -T` to see the available tasks for dev mode.
+
+* [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
+* [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
+* [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
+* [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
+
