@@ -12,13 +12,12 @@ def run_command(command)
   Projects.each do |dir|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
-      puts "====================================="
-      dirname = File.dirname(__FILE__)
-      puts "cd .#{path.sub(/#{dirname}/,'')}"
-      puts "$ " << command
-      puts "====================================="
+      puts "="*50
+      puts "# " + path.sub(/#{File.dirname(__FILE__)}\//,'')
+      puts "# " + command
+      puts "-"*40
       system command
-      puts 
+      puts
     end
   end
 end
