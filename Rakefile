@@ -77,7 +77,7 @@ namespace :gem do
 
   desc "Install all gems locally"
   task :install => :build do
-    run_command "sudo rake install"
+    run_command "rake install"
   end
 
   desc "Uninstall gems locally"
