@@ -76,7 +76,7 @@ namespace :gem do
   end
 
   desc "Install all gems locally"
-  task :install => :build do
+  task :install do
     run_command "rake install"
   end
 
