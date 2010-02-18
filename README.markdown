@@ -1,7 +1,10 @@
 # Rspec 2 Development Environment Setup
 
+
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
+    gem install bundler
+    bundle install
     rake
 
 To setup your development environment run `rake`. This will pull all of the
