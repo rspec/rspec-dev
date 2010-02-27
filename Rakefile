@@ -26,6 +26,11 @@ task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
 
+desc "run an arbitrary command against all repos"
+task :run, :command do |t, args|
+  run_command args[:command]
+end
+
 namespace :gem do
   desc "Write out a new version constant for each project.  You must supply VERSION"
   task :write_version do
