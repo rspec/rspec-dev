@@ -26,38 +26,15 @@ task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
 
-def build_version_string(project_name, major, minor, tiny, pre)
-version = <<versionstring
-module Rspec # :nodoc:
-  module #{project_name.capitalize} # :nodoc:
-    module Version # :nodoc:
-      unless defined?(MAJOR)
-        MAJOR  = #{major}
-        MINOR  = #{minor}
-        TINY   = #{tiny}
-        PRE    = '#{pre}'
-
-        STRING = [MAJOR, MINOR, TINY, PRE].compact.join('.')
-
-        SUMMARY = "#{project_name.downcase} " + STRING
-      end
-    end
-  end
-end
-versionstring
-end
-
 namespace :gem do
-  desc "Write out a new version constant for each project.  You must supply MAJOR, MINOR, TINY, and PRE."
+  desc "Write out a new version constant for each project.  You must supply VERSION"
   task :write_version do
-    major, minor, tiny, pre = ENV['MAJOR'], ENV['MINOR'], ENV['TINY'], ENV['PRE']
-    raise("You must supply MAJOR, MINOR, TINY, and PRE versions") if [major, minor, tiny, pre].any? { |v| v.nil? } 
+    raise("You must supply VERSION") unless ENV["VERSION"]
     Projects.each do |project|
-      version_string = build_version_string(project, major, minor, tiny, pre) 
-      file = "repos/#{project}/lib/rspec/#{project}/version.rb"
+      file = "repos/#{project}/VERSION"
       FileUtils.rm_rf file
-      File.open(file, "w+") { |f| f << version_string }
-      puts "Writing out version #{major}.#{minor}.#{tiny}.#{pre} for #{project}"
+      File.open(file, "w+") { |f| f << ENV["VERSION"] }
+      puts "Writing out version #{ENV['VERSION']} for #{project}"
     end
   end
 
