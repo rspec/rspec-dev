@@ -4,7 +4,7 @@ require 'rake'
 require 'fileutils'
 require 'pathname'
 
-Projects = ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec', 'rspec-rails']
+Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
