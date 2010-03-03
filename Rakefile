@@ -13,7 +13,7 @@ def run_command(command)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       puts "="*50
-      puts "# " + path.sub(/#{File.dirname(__FILE__)}\//,'')
+      puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
       puts "# " + command
       puts "-"*40
       system command
