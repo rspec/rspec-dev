@@ -111,9 +111,9 @@ namespace :git do
   end
 
   desc "git commit all the repos with the same commit message"
-  task :commit do
-    raise("You must supply a MESSAGE to commit") unless ENV['MESSAGE']
-    run_command "git commit -am '#{ENV['MESSAGE']}'"
+  task :commit, :message do |t, args|
+    raise("You must supply a message to git:commit:\n\n  rake git:commit[\"this is the commit message\"]\n\n") unless args[:message]
+    run_command "git commit -am '#{args[:message]}'"
   end
 end
 
