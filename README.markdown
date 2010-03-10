@@ -5,6 +5,7 @@
     cd rspec-dev
     gem install bundler
     bundle install
+    rake git:clone
     rake gem:install
     rake
 
