@@ -127,4 +127,20 @@ task :gemspec do
   run_command 'rake gemspec'
 end
 
-task :default => ['git:clone', 'gem:install', :spec]
+namespace :install do
+  desc "install the gem bundle"
+  task :bundle do
+    sh "bundle install"
+  end
+
+  desc "install rails in the rspec-rails repo"
+  task :rails do
+    Dir.chdir('repos/rspec-rails') do
+      sh "rake rails:clone"
+    end
+  end
+end
+
+task :setup => ["install:bundle", "git:clone", "install:rails", "gem:install"]
+
+task :default => :spec

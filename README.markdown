@@ -1,12 +1,17 @@
-# Rspec 2 Development Environment Setup
+# Rspec 2 Development
 
+
+## Setting up the environment 
+
+The rspec-2 dev environment uses bundler to install all the gems you need.
+This works best if you're working in a development environment that does
+_not_ require you to use sudo to install gems.
+
+    gem install bundler
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
-    gem install bundler
-    bundle install
-    rake git:clone
-    rake gem:install
-    rake
+    rake setup
+    rake spec 
 
 After the initial clone you can run `rake git:pull` to update to the latest bits.
 
