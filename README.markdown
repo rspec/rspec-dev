@@ -5,6 +5,7 @@
     cd rspec-dev
     gem install bundler
     bundle install
+    rake gem:install
     rake
 
 To setup your development environment run `rake`. This will pull all of the
