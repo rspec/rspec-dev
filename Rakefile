@@ -31,13 +31,13 @@ end
 
 namespace :gem do
   desc "Write out a new version constant for each project.  You must supply VERSION"
-  task :write_version do
-    raise("You must supply VERSION") unless ENV["VERSION"]
+  task :write_version, :version do |t, args|
+    raise("You must supply VERSION") unless args[:version]
     Projects.each do |project|
       file = "repos/#{project}/VERSION"
       FileUtils.rm_rf file
-      File.open(file, "w+") { |f| f << ENV["VERSION"] }
-      puts "Writing out version #{ENV['VERSION']} for #{project}"
+      File.open(file, "w+") { |f| f << args[:version] }
+      puts "Writing out version #{args[:version]} for #{project}"
     end
   end
 
