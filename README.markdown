@@ -53,7 +53,6 @@ requests are fine, but please include a link to the issue you are addressing.
 We're using github issues to track rspec-2 issues. Each repo has its own issue
 tracker, so please use the appropriate one:
 
-* [http://github.com/rspec/rspec/issues](http://github.com/rspec/rspec/issues)
 * [http://github.com/rspec/rspec-core/issues](http://github.com/rspec/rspec-core/issues)
 * [http://github.com/rspec/rspec-dev/issues](http://github.com/rspec/rspec-dev/issues)
 * [http://github.com/rspec/rspec-expectations/issues](http://github.com/rspec/rspec-expectations/issues)
