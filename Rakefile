@@ -141,6 +141,6 @@ namespace :install do
   end
 end
 
-task :setup => ["install:bundle", "git:clone", "install:rails", "gem:install"]
+task :setup => ["install:bundle", "git:clone", "gem:install", "install:rails"]
 
 task :default => :spec
