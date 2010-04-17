@@ -15,7 +15,7 @@ like rvm to manage your gem environments, do yourself a favor and start today.
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
     rake setup
-    rake spec 
+    rake
 
 If all goes well, you'll end up seeing a lot of passing cucumber features
 and rspec code examples. You'll also have a directory structure that looks
