@@ -119,10 +119,6 @@ task :clobber do
   run_command "rake clobber"
 end
 
-task :spec do
-  run_command 'rake'
-end
-
 task :gemspec do
   run_command 'rake gemspec'
 end
@@ -143,4 +139,6 @@ end
 
 task :setup => ["install:bundle", "git:clone", "gem:install", "install:rails"]
 
-task :default => :spec
+task :default do
+  run_command 'rake'
+end

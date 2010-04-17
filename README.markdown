@@ -11,15 +11,11 @@ This works best if you're working in a development environment that does _not_
 require you to use sudo to install gems. If you're not already using something
 like rvm to manage your gem environments, do yourself a favor and start today.
 
-    gem install bundler
-    gem install arel
+    gem install rake bundler
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
     rake setup
     rake spec 
-
-NOTE: bundler and arel are external dependencies of rails that we need
-to install before we can generate an app in rspec-rails
 
 If all goes well, you'll end up seeing a lot of passing cucumber features
 and rspec code examples. You'll also have a directory structure that looks
