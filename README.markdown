@@ -6,11 +6,11 @@ dependent gems:
 
 ## Setting up the environment 
 
-The rspec-2 dev environment uses bundler to install all the gems you need.
-This works best if you're working in a development environment that does _not_
-require you to use sudo to install gems. If you're not already using something
-like rvm to manage your gem environments, do yourself a favor and start today.
+We recommend you use rvm with a dedicated rvm gemset.
 
+    export RUBYOPT=rubygems
+    rvm gemset create rspec2-dev
+    rvm gemset use rspec2-dev
     gem install rake bundler
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
