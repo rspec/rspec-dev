@@ -1,4 +1,4 @@
-source :gemcutter
+source "http://rubygems.org"
 
 gem "jeweler", ">= 1.4.0"
 gem "cucumber", ">= 0.6.2"
