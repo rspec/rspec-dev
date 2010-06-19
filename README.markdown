@@ -6,6 +6,12 @@ dependent gems:
 
 ## Setting up the environment 
 
+System pre-reqs:
+
+    git
+    rvm
+    sqlite3
+
 We recommend you use rvm with a dedicated rvm gemset.
 
     export RUBYOPT=rubygems
@@ -28,8 +34,11 @@ like this:
         rspec-mocks        # doubles, mocks, stubs, fakes, etc
         rspec-rails        # rspec 2 for rails 3
           tmp
-            rails          # clone of the rails repo used for spec'ing rspec-rails
+            aruba          # gets generated when running rspec-rails' cukes
             example_app    # gets generated when running rspec-rails' specs 
+          vendor
+            arel           # clone of the arel repo used for spec'ing rspec-rails
+            rails          # clone of the rails repo used for spec'ing rspec-rails
         rspec              # meta-gem that depends on core, expectations, and mocks
 
 After the initial clone you can run `rake git:pull` from the rspec-dev
