@@ -90,8 +90,12 @@ tracker, so please use the appropriate one:
 Not everybody uses rubygems as their package management system. If this
 sounds odd to you, read http://gist.github.com/54177.
 
-In light of this fact, these repositories are "require 'rubygems'" free, so
-you'll need to do any of the following:
+In light of this fact, these repositories are "require 'rubygems'" free. The
+included Rakefiles use Bundler, which effectively manages all of this for
+you.
+
+If you're using any of these repos in isolation and without Bundler, however,
+you may need to do one of the following:
 
     export RUBYOPT=rubygems
     set RUBYOPT=rubygems
@@ -124,4 +128,3 @@ by submitting a patch to this README.
 * [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
 * [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
 * [http://github.com/rspec/rspec-rails](http://github.com/rspec/rspec-rails)
-
