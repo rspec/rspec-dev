@@ -106,6 +106,11 @@ namespace :git do
         end
       end
     end
+    mkdir_p "repos/rspec-rails/vendor"
+    Dir.chdir("repos/rspec-rails/vendor") do
+      sh "git clone git://github.com/rails/arel.git"
+      sh "git clone git://github.com/rails/rails.git"
+    end
   end
 
   desc "git commit all the repos with the same commit message"
