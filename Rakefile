@@ -124,15 +124,11 @@ task :gemspec do
 end
 
 namespace :install do
-  desc "install the gem bundle"
+  desc "install the gem bundles"
   task :bundle do
     sh "bundle install"
-  end
-
-  desc "install rails in the rspec-rails repo"
-  task :rails do
-    Dir.chdir('repos/rspec-rails') do
-      sh "rake rails:clone"
+    Dir.chdir("repos/rspec-rails") do
+      sh "bundle install"
     end
   end
 end
@@ -143,7 +139,7 @@ namespace :bundle do
   end
 end
 
-task :setup => ["install:bundle", "git:clone", "install:rails"]
+task :setup => ["git:clone", "install:bundle"]
 
 task :default do
   run_command 'rake'
