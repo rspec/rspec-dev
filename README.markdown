@@ -28,6 +28,11 @@ You just need to install two gems to start:
     gem install rake
     gem install bundler --version ">= 1.0.0.beta"
 
+Bundler will only install if you have RubyGems 1.3.6 or later, so you may need
+to update RubyGems first:
+
+    gem update --system
+
 ### Once that's all set up ...
 
 Once you have all the pre-reqs listed above, here's all you need to do
