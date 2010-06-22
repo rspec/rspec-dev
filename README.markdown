@@ -1,23 +1,38 @@
 # Rspec 2 Development
 
 This repository is for anyone interested in contributing to rspec-2 or
-rspec-rails-2. To do so, you'll need a number of additional repositories and
-dependent gems:
+rspec-rails-2.
 
 ## Setting up the environment 
 
-System pre-reqs:
+### System pre-reqs:
 
     git
-    rvm
     sqlite3
 
-We recommend you use rvm with a dedicated rvm gemset.
+### Gem environment
 
-    export RUBYOPT=rubygems
-    rvm gemset create rspec2-dev
-    rvm gemset use rspec2-dev
-    gem install rake bundler
+This all works best if you have a gem environment which doesn't require you to
+install gems as an adminstrator. If you use rvm, be sure to use an
+rvm-installed ruby (not system ruby).
+
+If you're not using rvm, one solution is to set the `BUNDLE_PATH` environment
+variable to `~/.bundle` (this is the default for `bundler-1.0.0.beta`, but
+rumor has it that the final release will have a different default, so better to
+set it explicitly now).
+
+### required gems
+
+You just need to install two gems to start:
+
+    gem install rake
+    gem install bundler --version ">= 1.0.0.beta"
+
+### Once that's all set up ...
+
+Once you have all the pre-reqs listed above, here's all you need to do
+to set up your environment:
+
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
     rake setup

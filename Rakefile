@@ -137,6 +137,12 @@ namespace :install do
   end
 end
 
+namespace :bundle do
+  task :unlock do
+    sh "find . -name 'Gemfile.lock' | xargs rm"
+  end
+end
+
 task :setup => ["install:bundle", "git:clone", "gem:install", "install:rails"]
 
 task :default do
