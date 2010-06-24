@@ -131,19 +131,16 @@ task :gemspec do
   run_command 'rake gemspec'
 end
 
-namespace :install do
-  desc "install the gem bundles"
-  task :bundle do
-    sh "bundle install"
-    Dir.chdir("repos/rspec-rails") do
-      sh "bundle install"
-    end
-  end
-end
-
 namespace :bundle do
+  desc "unlock the gem bundles"
   task :unlock do
     sh "find . -name 'Gemfile.lock' | xargs rm"
+  end
+
+  desc "install the gem bundles"
+  task :install do
+    sh "bundle install"
+    run_command 'bundle install'
   end
 end
 
