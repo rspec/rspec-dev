@@ -85,11 +85,16 @@ namespace :dev do
 end
 
 namespace :git do
-  { :status => nil, :pull => '--rebase', :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
+  { :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
       run_command "git #{command} #{options}".strip
     end
+  end
+
+  desc 'git pull on all the repos'
+  task :pull => [:clone, 'bundle:unlock'] do
+    run_command "git pull --rebase"
   end
 
   task :st => :status
