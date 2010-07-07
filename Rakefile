@@ -149,7 +149,7 @@ namespace :bundle do
   end
 end
 
-task :setup => ["git:clone", "install:bundle"]
+task :setup => ["git:clone", "bundle:install"]
 
 task :default do
   run_command 'rake'
