@@ -10,23 +10,27 @@ rspec-rails-2.
     git
     sqlite3
 
-### Gem environment
+### Environment environment
 
-This all works best if you have a gem environment which doesn't require you to
-install gems as an adminstrator. If you use rvm, be sure to use an
-rvm-installed ruby (not system ruby).
+The safest bet is to use rvm with an rvm installed ruby (not system ruby) and
+a clean gemset dedicated to rspec-dev:
 
-If you're not using rvm, one solution is to set the `BUNDLE_PATH` environment
-variable to `~/.bundle` (this is the default for `bundler-1.0.0.beta`, but
-rumor has it that the final release will have a different default, so better to
-set it explicitly now).
+    rvm use 1.8.7 # or whatever version of Ruby you prefer
+    rvm gemset create rspec-dev
+    rvm gemset use rspec-dev
+
+Windows users can use pik instead of rvm.
+
+If you use a different Ruby version manager (or none at all), the important
+thing is that you have a sandboxed gem environment that does not require you to
+use sudo to install gems, and has no rspec libraries installed.
 
 ### required gems
 
 You just need to install two gems to start:
 
     gem install rake
-    gem install bundler --version ">= 1.0.0.beta"
+    gem install bundler --pre
 
 Bundler will only install if you have RubyGems 1.3.6 or later, so you may need
 to update RubyGems first:
