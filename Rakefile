@@ -34,16 +34,13 @@ namespace :gem do
   task :write_version, :version do |t, args|
     raise("You must supply VERSION") unless args[:version]
     Projects.each do |project|
-      file = "repos/#{project}/VERSION"
-      FileUtils.rm_rf file
-      File.open(file, "w+") { |f| f << args[:version] }
+      file = Dir.chdir("repos/#{project}") { File.expand_path(`git ls-files **/version.rb`.chomp) }
+      current_content = File.read(file)
+      new_content = current_content.gsub(/STRING = ['"][^'"]+['"]/, "STRING = '#{args[:version]}'")
+
+      File.open(file, "w") { |f| f.write(new_content) }
       puts "Writing out version #{args[:version]} for #{project}"
     end
-  end
-
-  desc "Rebuild gemspecs"
-  task :spec do
-    run_command "rake gemspec"
   end
 
   desc "Build gems"
@@ -130,10 +127,6 @@ end
 
 task :clobber do
   run_command "rake clobber"
-end
-
-task :gemspec do
-  run_command 'rake gemspec'
 end
 
 namespace :bundle do
