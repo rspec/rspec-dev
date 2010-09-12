@@ -20,6 +20,12 @@ def run_command(command)
   end
 end
 
+def each_project
+  Projects.each do |project|
+    Dir.chdir("repos/#{project}") { yield project }
+  end
+end
+
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
@@ -38,8 +44,8 @@ namespace :gem do
       current_content = File.read(file)
       new_content = current_content.gsub(/STRING = ['"][^'"]+['"]/, "STRING = '#{args[:version]}'")
 
-      File.open(file, "w") { |f| f.write(new_content) }
       puts "Writing out version #{args[:version]} for #{project}"
+      File.open(file, "w") { |f| f.write(new_content) }
     end
   end
 
@@ -50,6 +56,18 @@ namespace :gem do
 
   task :clean_pkg_directories do
     run_command "rm -rf pkg"
+  end
+
+  desc "Tag each repo, push the tags, push the gems"
+  task :release, :version do |t, args|
+    raise("You must supply VERSION") unless args[:version]
+    version = args[:version] =~ /^v/ ? args[:version] : "v#{args[:version]}"
+    run_command("git tag #{version}")
+    run_command("git push")
+    run_command("git push --tags")
+    each_project do |project|
+      system "gem push pkg/#{project}-#{version.sub(/^v/,'')}.gem"
+    end
   end
 
   desc "Install all gems locally"
