@@ -22,7 +22,13 @@ end
 
 def each_project
   Projects.each do |project|
-    Dir.chdir("repos/#{project}") { yield project }
+    Dir.chdir("repos/#{project}") do 
+      puts "="*50
+      puts "# #{project}"
+      puts "-"*40
+      yield project
+      puts
+    end
   end
 end
 
@@ -61,12 +67,12 @@ namespace :gem do
   desc "Tag each repo, push the tags, push the gems"
   task :release, :version do |t, args|
     raise("You must supply VERSION") unless args[:version]
-    version = args[:version] =~ /^v/ ? args[:version] : "v#{args[:version]}"
-    run_command("git tag #{version}")
+    version = args[:version].sub(/^v/,'')
+    run_command("git tag v#{version}")
     run_command("git push")
     run_command("git push --tags")
     each_project do |project|
-      system "gem push pkg/#{project}-#{version.sub(/^v/,'')}.gem"
+      system "gem push pkg/#{project}-#{version}.gem"
     end
   end
 
