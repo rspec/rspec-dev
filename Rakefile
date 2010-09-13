@@ -65,15 +65,8 @@ namespace :gem do
   end
 
   desc "Tag each repo, push the tags, push the gems"
-  task :release, :version do |t, args|
-    raise("You must supply VERSION") unless args[:version]
-    version = args[:version].sub(/^v/,'')
-    run_command("git tag v#{version}")
-    run_command("git push")
-    run_command("git push --tags")
-    each_project do |project|
-      system "gem push pkg/#{project}-#{version}.gem"
-    end
+  task :release do
+    run_command("rake release")
   end
 
   desc "Install all gems locally"
