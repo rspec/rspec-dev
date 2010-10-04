@@ -14,7 +14,7 @@ def run_command(command)
       puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
       puts "# " + command
       puts "-"*40
-      system command
+      sh command
       puts
     end
   end
@@ -132,10 +132,6 @@ task :clobber do
   run_command "rake clobber"
 end
 
-task :gemspec do
-  run_command 'rake gemspec'
-end
-
 namespace :bundle do
   desc "unlock the gem bundles"
   task :unlock do
@@ -144,7 +140,6 @@ namespace :bundle do
 
   desc "install the gem bundles"
   task :install do
-    sh "bundle install"
     run_command 'bundle install'
   end
 end
