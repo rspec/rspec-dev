@@ -20,6 +20,18 @@ def run_command(command)
   end
 end
 
+def each_project
+  Projects.each do |project|
+    Dir.chdir("repos/#{project}") do 
+      puts "="*50
+      puts "# #{project}"
+      puts "-"*40
+      yield project
+      puts
+    end
+  end
+end
+
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
@@ -34,16 +46,13 @@ namespace :gem do
   task :write_version, :version do |t, args|
     raise("You must supply VERSION") unless args[:version]
     Projects.each do |project|
-      file = "repos/#{project}/VERSION"
-      FileUtils.rm_rf file
-      File.open(file, "w+") { |f| f << args[:version] }
-      puts "Writing out version #{args[:version]} for #{project}"
-    end
-  end
+      file = Dir.chdir("repos/#{project}") { File.expand_path(`git ls-files **/version.rb`.chomp) }
+      current_content = File.read(file)
+      new_content = current_content.gsub(/STRING = ['"][^'"]+['"]/, "STRING = '#{args[:version]}'")
 
-  desc "Rebuild gemspecs"
-  task :spec do
-    run_command "rake gemspec"
+      puts "Writing out version #{args[:version]} for #{project}"
+      File.open(file, "w") { |f| f.write(new_content) }
+    end
   end
 
   desc "Build gems"
@@ -53,6 +62,11 @@ namespace :gem do
 
   task :clean_pkg_directories do
     run_command "rm -rf pkg"
+  end
+
+  desc "Tag each repo, push the tags, push the gems"
+  task :release do
+    run_command("rake release")
   end
 
   desc "Install all gems locally"

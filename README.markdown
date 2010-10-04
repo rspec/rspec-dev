@@ -77,8 +77,13 @@ specs and cucumber features, and make patches.
 
 ## Patches
 
-Patches will not be accepted without being associated with an issue. Pull
-requests are fine, but please include a link to the issue you are addressing.
+Please submit an issue to one of the issue trackers listed below and include a
+link to either of:
+
+* a gist (or equivalent) of the patch
+* a branch or commit in your github fork of the repo
+
+Please do _not_ send pull requests.
 
 ## Issues
 
