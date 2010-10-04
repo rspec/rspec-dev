@@ -14,7 +14,7 @@ def run_command(command)
       puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
       puts "# " + command
       puts "-"*40
-      system command
+      sh command
       puts
     end
   end
@@ -154,7 +154,6 @@ namespace :bundle do
 
   desc "install the gem bundles"
   task :install do
-    sh "bundle install"
     run_command 'bundle install'
   end
 end

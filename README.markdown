@@ -29,8 +29,7 @@ use sudo to install gems, and has no rspec libraries installed.
 
 You just need to install two gems to start:
 
-    gem install rake
-    gem install bundler --pre
+    gem install rake bundler
 
 Bundler will only install if you have RubyGems 1.3.6 or later, so you may need
 to update RubyGems first:
