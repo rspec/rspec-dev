@@ -21,10 +21,10 @@ GEM
     json (1.4.6)
     mocha (0.9.8)
       rake
-    perftools.rb (0.5.0)
     rake (0.8.7)
     rcov (0.9.9)
     rr (1.0.0)
+    ruby-prof (0.9.2)
     spork (0.8.4)
     term-ansicolor (1.0.5)
     thor (0.14.3)
@@ -38,8 +38,8 @@ DEPENDENCIES
   cucumber (>= 0.6.2)
   flexmock
   mocha
-  perftools.rb
   rcov (>= 0.9.7.1)
   rr
+  ruby-prof
   spork
   thor (>= 0.13.3)
