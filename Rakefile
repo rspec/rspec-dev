@@ -22,7 +22,7 @@ end
 
 def each_project
   Projects.each do |project|
-    Dir.chdir("repos/#{project}") do 
+    Dir.chdir("repos/#{project}") do
       puts "="*50
       puts "# #{project}"
       puts "-"*40
@@ -79,7 +79,7 @@ namespace :gem do
     Projects.each do |project|
       path = ReposPath.join(project)
       FileUtils.cd(path) do
-        system "gem uninstall --all --executables --ignore-dependencies #{project}" 
+        system "gem uninstall --all --executables --ignore-dependencies #{project}"
       end
     end
   end
@@ -162,4 +162,24 @@ task :setup => ["git:clone", "bundle:install"]
 
 task :default do
   run_command 'rake'
+end
+
+task :authors do
+  logs = Projects.inject("") do |logs, dir|
+    path = ReposPath.join(dir)
+    FileUtils.cd(path) do
+      logs << `git log`
+    end
+    logs
+  end
+  authors = logs.grep(/^Author/).
+    map{|l| l.sub(/Author: /,'')}.
+    map{|l| l.split('<').first}.
+    map{|l| l.split('and')}.flatten.
+    map{|l| l.split('+')}.flatten.
+    map{|l| l.split(',')}.flatten.
+    map{|l| l.strip}.
+    uniq.sort
+  puts "#{authors.count} authors: "
+  puts authors.join(", ")
 end
