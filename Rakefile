@@ -111,6 +111,12 @@ namespace :git do
     run_command "git pull --rebase"
   end
 
+  desc 'git checkout repos'
+  task :checkout, :version  do |t, args|
+    raise("rake git:checkout[VERSION]") unless args[:version]
+    run_command "git checkout #{args[:version]}"
+  end
+
   task :st => :status
   task :update => :pull
 
