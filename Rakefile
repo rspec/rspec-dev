@@ -159,6 +159,7 @@ namespace :bundle do
 
   desc "install the gem bundles"
   task :install do
+    `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     run_command 'bundle install'
   end
 end
