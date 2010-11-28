@@ -5,4 +5,5 @@ rdoc
 pkg
 repos
 tags
-.bundleGemfile.lock
+.bundle
+Gemfile.lock
