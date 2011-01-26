@@ -132,10 +132,9 @@ namespace :git do
       end
     end
 
-    unless File.directory?("repos/rspec-rails/vendor/rails")
-      mkdir_p "repos/rspec-rails/vendor"
-      Dir.chdir("repos/rspec-rails/vendor") do
-        sh "git clone git://github.com/rails/rails.git"
+    unless File.exist?("repos/rspec-rails/Gemfile")
+      Dir.chdir("repos/rspec-rails") do
+        sh "cp Gemfile-3-0-stable Gemfile"
       end
     end
   end
