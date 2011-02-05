@@ -107,7 +107,7 @@ namespace :git do
   end
 
   desc 'git pull on all the repos'
-  task :pull => [:clone, 'bundle:unlock'] do
+  task :pull => [:clone] do
     run_command "git pull --rebase"
   end
 
