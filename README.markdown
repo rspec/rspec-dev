@@ -121,6 +121,11 @@ command from the root of the repository you're working on. i.e. if you're
 working on rspec-core, cd to the rspec-core directory. Don't try to run specs
 from the rspec-dev directory, or you'll see `LoadError`s.
 
+## unterminated string meets end of file (SyntaxError) [In rspec-rails]
+
+Use "rspec ." give this error, because rspec try to execute some files in lib folder.  
+When you want to run tests use "rspec spec/."
+
 ## different problem?
 
 If you run into a problem not documented here, please check the rspec-dev
