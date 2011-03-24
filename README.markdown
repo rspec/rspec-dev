@@ -123,8 +123,17 @@ from the rspec-dev directory, or you'll see `LoadError`s.
 
 ## unterminated string meets end of file (SyntaxError) [In rspec-rails]
 
-Use "rspec ." give this error, because rspec try to execute some files in lib folder.  
-When you want to run tests use "rspec spec/."
+If you want to run tests without using rake, you have to know that running:
+
+   rspec . 
+
+You will see syntax error, because rspec try to execute some files in lib folder.  
+When you want to run tests you have to run:
+
+   rspec spec/.
+
+Rspec will execute just the files in spec folder. Using rake you haven't this 
+problem.
 
 ## different problem?
 
