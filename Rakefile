@@ -134,7 +134,7 @@ namespace :git do
 
     unless File.exist?("repos/rspec-rails/Gemfile")
       Dir.chdir("repos/rspec-rails") do
-        sh "cp Gemfile-3-0-stable Gemfile"
+        sh "cp gemfiles/rails-3-0-stable Gemfile"
       end
     end
   end
