@@ -15,9 +15,7 @@ rspec-rails-2.
 The safest bet is to use rvm with an rvm installed ruby (not system ruby) and
 a clean gemset dedicated to rspec-dev:
 
-    rvm use 1.8.7 # or whatever version of Ruby you prefer
-    rvm gemset create rspec-dev
-    rvm gemset use rspec-dev
+    rvm 1.9.2@rspec-dev --create # or whatever version of Ruby you prefer
 
 Windows users can use pik instead of rvm.
 
