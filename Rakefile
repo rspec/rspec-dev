@@ -132,11 +132,6 @@ namespace :git do
       end
     end
 
-    unless File.exist?("repos/rspec-rails/Gemfile")
-      Dir.chdir("repos/rspec-rails") do
-        sh "cp Gemfile-3-0-stable Gemfile"
-      end
-    end
   end
 
   desc "git commit all the repos with the same commit message"
