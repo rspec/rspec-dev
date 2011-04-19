@@ -1,1 +1,1 @@
-rvm gemset use rspec-dev
+rvm @rspec-dev --create
