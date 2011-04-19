@@ -6,8 +6,16 @@ Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-r
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
-def run_command(command)
-  Projects.each do |dir|
+def run_command(command, opts={})
+  projects = if opts[:except]
+               Projects - [opts[:except]].flatten
+             elsif opts[:only]
+               [opts[:only]].flatten
+             else
+               Projects
+             end
+  projects.each do |dir|
+    next if [opts[:except]].flatten.compact.include?(dir)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       puts "="*50
@@ -154,7 +162,8 @@ namespace :bundle do
   desc "install the gem bundles"
   task :install do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
-    run_command 'bundle install'
+    run_command 'bundle install', :except => 'rspec-rails'
+    run_command 'bundle install --gemfile gemfiles/rails-3.0.7', :only => 'rspec-rails'
   end
 end
 
@@ -172,14 +181,14 @@ task :authors do
     end
     logs
   end
-  authors = logs.grep(/^Author/).
+  authors = logs.split("\n").grep(/^Author/).
     map{|l| l.sub(/Author: /,'')}.
     map{|l| l.split('<').first}.
     map{|l| l.split('and')}.flatten.
     map{|l| l.split('+')}.flatten.
     map{|l| l.split(',')}.flatten.
     map{|l| l.strip}.
-    uniq.sort
+    uniq.compact.reject{|n| n == ""}.sort
   puts "#{authors.count} authors: "
-  puts authors.join(", ")
+  puts authors.compact.join(", ")
 end
