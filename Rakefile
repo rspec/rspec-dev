@@ -22,7 +22,11 @@ def run_command(command, opts={})
       puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
       puts "# " + command
       puts "-"*40
-      sh command
+      begin
+        sh command
+      rescue Exception => e
+        puts e.backtrace
+      end
       puts
     end
   end
