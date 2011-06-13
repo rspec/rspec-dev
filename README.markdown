@@ -8,9 +8,9 @@ rspec-rails-2.
 ### System pre-reqs:
 
     git
-    sqlite3
+    sqlite3 # for rspec-rails
 
-### Environment environment
+### Environment
 
 The safest bet is to use rvm with an rvm installed ruby (not system ruby) and
 a clean gemset dedicated to rspec-dev:
@@ -25,24 +25,25 @@ use sudo to install gems, and has no rspec libraries installed.
 
 ### required gems
 
-You just need to install two gems to start:
+You just need to install bundler to start:
 
-    gem install rake bundler
+    gem install bundler
 
 Bundler will only install if you have RubyGems 1.3.6 or later, so you may need
 to update RubyGems first:
 
     gem update --system
 
-### Once that's all set up ...
+### Once bundler installed
 
 Once you have all the pre-reqs listed above, here's all you need to do
 to set up your environment:
 
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
-    rake setup
-    rake
+    bundle install
+    bin/rake setup
+    bin/rake
 
 If all goes well, you'll end up seeing a lot of passing cucumber features
 and rspec code examples. You'll also have a directory structure that looks
@@ -57,9 +58,6 @@ like this:
           tmp
             aruba          # gets generated when running rspec-rails' cukes
             example_app    # gets generated when running rspec-rails' specs 
-          vendor
-            arel           # clone of the arel repo used for spec'ing rspec-rails
-            rails          # clone of the rails repo used for spec'ing rspec-rails
         rspec              # meta-gem that depends on core, expectations, and mocks
 
 After the initial clone you can run `rake git:pull` from the rspec-dev
@@ -83,14 +81,11 @@ listed below. If you submit an issue, please include a link to either of:
 
 ## Issues
 
-We're using github issues to track rspec-2 issues. Each repo has its own issue
-tracker, so please use the appropriate one:
-
-* [http://github.com/rspec/rspec-core/issues](http://github.com/rspec/rspec-core/issues)
-* [http://github.com/rspec/rspec-dev/issues](http://github.com/rspec/rspec-dev/issues)
-* [http://github.com/rspec/rspec-expectations/issues](http://github.com/rspec/rspec-expectations/issues)
-* [http://github.com/rspec/rspec-mocks/issues](http://github.com/rspec/rspec-mocks/issues)
-* [http://github.com/rspec/rspec-rails/issues](http://github.com/rspec/rspec-rails/issues)
+* [https://github.com/rspec/rspec-core/issues](https://github.com/rspec/rspec-core/issues)
+* [https://github.com/rspec/rspec-dev/issues](https://github.com/rspec/rspec-dev/issues)
+* [https://github.com/rspec/rspec-expectations/issues](https://github.com/rspec/rspec-expectations/issues)
+* [https://github.com/rspec/rspec-mocks/issues](https://github.com/rspec/rspec-mocks/issues)
+* [https://github.com/rspec/rspec-rails/issues](https://github.com/rspec/rspec-rails/issues)
 
 # Troubleshooting the environment
 
