@@ -41,7 +41,7 @@ to set up your environment:
 
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
-    bundle install
+    bundle install --binstubs
     bin/rake setup
     bin/rake
 
