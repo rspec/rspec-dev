@@ -166,9 +166,9 @@ namespace :bundle do
   desc "install the gem bundles"
   task :install do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
-    `bundle install`
+    `bundle install --binstubs`
     Bundler.with_clean_env do
-      run_command 'bundle install --gemfile ./Gemfile', :except => 'rspec-rails'
+      run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
       run_command 'thor gemfile:use 3.1.0', :only => 'rspec-rails'
     end
   end
