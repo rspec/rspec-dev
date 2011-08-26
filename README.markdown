@@ -34,7 +34,7 @@ to update RubyGems first:
 
     gem update --system
 
-### Once bundler installed
+### Once bundler is installed
 
 Once you have all the pre-reqs listed above, here's all you need to do
 to set up your environment:
@@ -63,7 +63,21 @@ like this:
 After the initial clone you can run `rake git:pull` from the rspec-dev
 directory to update all of the rspec repos (in repos).
 
-Run `rake -T` to see the available tasks for dev mode.
+Run `bin/rake -T` to see the available tasks for dev mode.
+
+#### Testing with multiple Rubies
+
+By default, `bundler install --binstubs` installs to the `bin/` directory, but
+should you want to test with multiple Rubies under rvm, you want to install
+each Ruby's binstubs into a different directory. This can be accomplished as
+such:
+
+    rvm use jruby@rspec-dev
+    git clone git://github.com/rspec/rspec-dev.git
+    cd rspec-dev
+    bundle install --binstubs=jruby-bin
+    jruby-bin/rake setup[jruby-bin]
+    jruby-bin/rake runtests[jruby-bin/rake]
 
 # Contributing
 

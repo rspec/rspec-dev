@@ -166,28 +166,38 @@ namespace :bundle do
   end
 
   desc "install the gem bundles"
-  task :install do
+  task :install, :binstubs do |t, args|
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
-    `bundle install --binstubs`
+    binstubs = if args.binstubs
+                 "--binstubs=#{args.binstubs}"
+               else
+                 "--binstubs"
+               end
+    `bundle install #{binstubs}`
     Bundler.with_clean_env do
-      run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
+      run_command "bundle install #{binstubs} --gemfile ./Gemfile", :except => 'rspec-rails'
       run_command 'thor gemfile:use 3.1.0', :only => 'rspec-rails'
     end
   end
 end
 
-task :setup => ["git:clone", "bundle:install"]
+task :setup, :binstubs do |t, args|
+  Rake::Task['git:clone'].invoke
+  Rake::Task['bundle:install'].invoke(args.binstubs)
+end
 
-task :default do
+task :runtests, :rake do |t, args|
   if UsingBundler
     Bundler.with_clean_env do
       ENV.delete 'BUNDLE_GEMFILE'
-      run_command 'bin/rake'
+      run_command args.rake || 'bin/rake'
     end
   else
-    run_command 'rake'
+    run_command args.rake || 'rake'
   end
 end
+
+task :default => :runtests
 
 task :authors do
   logs = Projects.inject("") do |logs, dir|
