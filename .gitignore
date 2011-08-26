@@ -9,3 +9,6 @@ tags
 Gemfile.lock
 .bundle
 bin
+*-bin
+*~
+.*~
