@@ -181,10 +181,7 @@ namespace :bundle do
   end
 end
 
-task :setup, :binstubs do |t, args|
-  Rake::Task['git:clone'].invoke
-  Rake::Task['bundle:install'].invoke(args.binstubs)
-end
+task :setup, [ :binstubs ] => [ "git:clone", "bundle:install" ]
 
 task :runtests, :rake do |t, args|
   if UsingBundler
