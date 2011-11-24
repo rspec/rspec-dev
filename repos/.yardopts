@@ -1,0 +1,9 @@
+--no-private
+--markup markdown
+rspec-core/lib/**/*.rb
+rspec-expectations/lib/**/*.rb
+rspec-mocks/lib/**/*.rb
+-
+RSpecCore.md
+RSpecExpectations.md
+RSpecMocks.md

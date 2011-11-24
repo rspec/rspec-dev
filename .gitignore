@@ -3,9 +3,11 @@
 coverage
 rdoc
 pkg
-repos
 tags
 .bundle
 Gemfile.lock
 .bundle
 bin
+repos/*
+!repos/.gitkeep
+!repos/.yardopts
