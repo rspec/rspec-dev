@@ -212,7 +212,7 @@ end
 
 task :rdoc => ["doc:clobber", "doc:generate"]
 
-task :authors do
+task :contributors do
   logs = Projects.inject("") do |logs, dir|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
@@ -228,6 +228,6 @@ task :authors do
     map{|l| l.split(',')}.flatten.
     map{|l| l.strip}.
     uniq.compact.reject{|n| n == ""}.sort
-  puts "#{authors.count} authors: "
+  puts "#{authors.count} contributors: "
   puts authors.compact.join(", ")
 end
