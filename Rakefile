@@ -187,10 +187,15 @@ namespace :doc do
       sh "ln -s rspec-core/README.md RSpecCore.md" unless test ?f, "RSpecCore.md"
       sh "ln -s rspec-expectations/README.md RSpecExpectations.md" unless test ?f, "RSpecExpectations.md"
       sh "ln -s rspec-mocks/README.md RSpecMocks.md" unless test ?f, "RSpecMocks.md"
+      sh "ln -s rspec-rails/README.md RSpecRails.md" unless test ?f, "RSpecRails.md"
       sh "yardoc"
       sh "rm RSpecCore.md"
       sh "rm RSpecExpectations.md"
       sh "rm RSpecMocks.md"
+      sh "rm RSpecRails.md"
+      sh %q|ruby -pi.bak -e "gsub(/Documentation by YARD \d+\.\d+\.\d+/, 'RSpec 2.8')" doc/_index.html|
+      sh %q|ruby -pi.bak -e "gsub(/<h1 class=\"alphaindex\">Alphabetic Index<\/h1>/, '')" doc/_index.html|
+      sh "cp doc/_index.html doc/index.html"
     end
   end
 
