@@ -169,7 +169,7 @@ namespace :bundle do
     `bundle install --binstubs`
     Bundler.with_clean_env do
       run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
-      run_command 'thor gemfile:use 3.1.0', :only => 'rspec-rails'
+      run_command 'thor version:use 3.1.0', :only => 'rspec-rails'
     end
   end
 end
