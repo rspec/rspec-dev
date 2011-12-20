@@ -1,5 +1,7 @@
 --no-private
 --markup markdown
+--markup-provider redcarpet
+--exclude rspec-rails/lib/generators/**/*/templates/*.rb
 rspec-core/lib/**/*.rb
 rspec-expectations/lib/**/*.rb
 rspec-mocks/lib/**/*.rb
