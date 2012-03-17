@@ -1,8 +1,7 @@
 require 'rake'
 require 'fileutils'
 require 'pathname'
-
-UsingBundler = !!ENV['BUNDLE_GEMFILE']
+require 'bundler'
 
 Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails']
 BaseRspecPath = Pathname.new(Dir.pwd)
@@ -179,7 +178,7 @@ end
 task :setup => ["git:clone", "bundle:install"]
 
 task :default do
-  if UsingBundler
+  if ENV.has_key?('BUNDLE_GEMFILE')
     Bundler.with_clean_env do
       ENV.delete 'BUNDLE_GEMFILE'
       run_command 'bin/rake'
