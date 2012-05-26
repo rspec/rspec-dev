@@ -71,6 +71,15 @@ Once you've set up the environment, you'll need to cd into the working
 directory of whichever repo you want to work in. From there you can run the
 specs and cucumber features, and make patches.
 
+## Documentation
+
+It's not currently [possible][doc-regen] for you to regenerate the [HTML
+documentation](http://relishapp.com/rspec) from the cukes (in the `features`
+directories).  It's still easy to edit them though: Just make sure that the
+narrative is valid (indented) Markdown.
+
+[doc-regen]: http://rubyforge.org/pipermail/rspec-devel/2011-January/005350.html
+
 ## Patches
 
 Please submit a pull request or a github issue to one of the issue trackers
