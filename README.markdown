@@ -71,6 +71,9 @@ Once you've set up the environment, you'll need to cd into the working
 directory of whichever repo you want to work in. From there you can run the
 specs and cucumber features, and make patches.
 
+NOTE: You do not need to use rspec-dev to work on a specific RSpec repo. You can treat
+each RSpec repo as an independent project.
+
 ## Patches
 
 Please submit a pull request or a github issue to one of the issue trackers
