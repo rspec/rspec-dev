@@ -6,8 +6,8 @@ pkg
 tags
 .bundle
 Gemfile.lock
-.bundle
 bin
 repos/*
 !repos/.gitkeep
 !repos/.yardopts
+.rvmrc
