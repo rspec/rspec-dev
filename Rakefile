@@ -188,6 +188,12 @@ task :default do
   end
 end
 
+desc "publish cukes to relishapp.com"
+task :relish, :version do |_, args|
+  raise "rake relish[VERSION]" unless args[:version]
+  run_command "rake relish['#{args[:version]}']", :except => ['rspec']
+end
+
 namespace :doc do
   desc "generate docs"
   task :generate do
