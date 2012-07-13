@@ -194,6 +194,31 @@ task :relish, :version do |_, args|
   run_command "rake relish['#{args[:version]}']", :except => ['rspec']
 end
 
+desc "generate release notes from changelogs"
+task :release_notes, :target do |_, args|
+  target = args[:target] || 'blog'
+  ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails'].each do |project|
+    lines = []
+    Dir.chdir("repos/#{project}") do
+      log = File.readlines("Changelog.md").map(&:chomp)
+      header = log.shift.split
+      lines << "### #{project}-#{header[1]}"
+      full_changelog_link = log.shift
+      if target == 'email'
+        lines << full_changelog_link[1..-2].gsub('](', ': ')
+      else
+        lines << full_changelog_link
+      end
+      while log.first !~ /^###/
+        lines << log.shift.chomp
+      end
+      lines << ""
+      lines << ""
+    end
+    puts lines.join("\n")
+  end
+end
+
 namespace :doc do
   desc "generate docs"
   task :generate do
