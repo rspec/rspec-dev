@@ -24,7 +24,9 @@ def run_command(command, opts={})
       puts "# " + command
       puts "-"*40
       begin
-        sh command
+        Bundler.with_clean_env do
+          sh command
+        end
       rescue Exception => e
         puts e.backtrace
       end
@@ -168,24 +170,15 @@ namespace :bundle do
   task :install do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     `bundle install --binstubs`
-    Bundler.with_clean_env do
-      run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
-      run_command 'thor version:use 3.2.2', :only => 'rspec-rails'
-    end
+    run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
+    run_command 'thor version:use 3.2.2', :only => 'rspec-rails'
   end
 end
 
 task :setup => ["git:clone", "bundle:install"]
 
 task :default do
-  if ENV.has_key?('BUNDLE_GEMFILE')
-    Bundler.with_clean_env do
-      ENV.delete 'BUNDLE_GEMFILE'
-      run_command 'bin/rake'
-    end
-  else
-    run_command 'rake'
-  end
+  run_command 'rake'
 end
 
 desc "publish cukes to relishapp.com"
