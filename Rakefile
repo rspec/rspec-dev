@@ -171,7 +171,7 @@ namespace :bundle do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     `bundle install --binstubs`
     run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
-    run_command 'thor version:use 3.2.2', :only => 'rspec-rails'
+    run_command 'thor version:use 3.2.8', :only => 'rspec-rails'
   end
 end
 
