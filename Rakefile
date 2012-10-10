@@ -73,7 +73,7 @@ namespace :gem do
 
   desc "Build gems"
   task :build => [:clean_pkg_directories] do
-    run_command "rake build"
+    run_command "bin/rake build"
   end
 
   task :clean_pkg_directories do
@@ -82,12 +82,12 @@ namespace :gem do
 
   desc "Tag each repo, push the tags, push the gems"
   task :release do
-    run_command("rake release")
+    run_command "bin/rake release"
   end
 
   desc "Install all gems locally"
   task :install do
-    run_command "rake install"
+    run_command "bin/rake install"
   end
 
   desc "Uninstall gems locally"
@@ -158,7 +158,7 @@ namespace :git do
 end
 
 task :clobber do
-  run_command "rake clobber"
+  run_command "bin/rake clobber"
 end
 
 namespace :bundle do
@@ -179,13 +179,13 @@ end
 task :setup => ["git:clone", "bundle:install"]
 
 task :default do
-  run_command 'rake'
+  run_command "bin/rake"
 end
 
 desc "publish cukes to relishapp.com"
 task :relish, :version do |_, args|
   raise "rake relish[VERSION]" unless args[:version]
-  run_command "rake relish['#{args[:version]}']", :except => ['rspec']
+  run_command "bin/rake relish['#{args[:version]}']", :except => ['rspec']
 end
 
 desc "generate release notes from changelogs"
