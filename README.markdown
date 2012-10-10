@@ -3,47 +3,44 @@
 This repository is for anyone interested in contributing to rspec-2 or
 rspec-rails-2.
 
-## Setting up the environment 
+## Environment
 
-### System pre-reqs:
+### System
 
     git
     sqlite3 # for rspec-rails
 
-### Environment
+### Ruby
 
-The safest bet is to use rvm with an rvm installed ruby (not system ruby) and
-a clean gemset dedicated to rspec-dev:
+The safest bet is to use [rvm](https://github.com/wayneeseguin/rvm) with an rvm
+installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 
-    rvm 1.9.2@rspec-dev --create # or whatever version of Ruby you prefer
+    rvm 1.9.3@rspec-dev --create # or whatever version of Ruby you prefer
 
-Windows users can use pik instead of rvm.
+[rbenv](https://github.com/sstephenson/rbenv) is also supported.
+
+Windows users can use [pik](https://github.com/vertiginous/pik).
 
 If you use a different Ruby version manager (or none at all), the important
 thing is that you have a sandboxed gem environment that does not require you to
 use sudo to install gems, and has no rspec libraries installed.
 
-### required gems
+### Bundler
 
-You just need to install bundler to start:
+Bundler is required for dependency management. Install it first:
 
     gem install bundler
 
-Bundler will only install if you have RubyGems 1.3.6 or later, so you may need
-to update RubyGems first:
+### rspec-dev
 
-    gem update --system
-
-### Once bundler installed
-
-Once you have all the pre-reqs listed above, here's all you need to do
-to set up your environment:
+Once all of the pre-reqs above are taken care of, run these steps to get
+bootstrapped:
 
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
     bundle install --binstubs
     bin/rake setup
-    bin/rake
+    bin/rake # runs tests in every repository
 
 If all goes well, you'll end up seeing a lot of passing cucumber features
 and rspec code examples. You'll also have a directory structure that looks
@@ -71,8 +68,8 @@ Once you've set up the environment, you'll need to cd into the working
 directory of whichever repo you want to work in. From there you can run the
 specs and cucumber features, and make patches.
 
-NOTE: You do not need to use rspec-dev to work on a specific RSpec repo. You can treat
-each RSpec repo as an independent project.
+NOTE: You do not need to use rspec-dev to work on a specific RSpec repo. You
+can treat each RSpec repo as an independent project.
 
 ## Patches
 
