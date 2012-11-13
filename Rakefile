@@ -25,7 +25,7 @@ def run_command(command, opts={})
       puts "-"*40
       begin
         Bundler.with_clean_env do
-          ENV['NOEXEC'] = "0" # prevent rubygems-bundler from interfering
+          ENV['NOEXEC_DISABLE'] = "1" # prevent rubygems-bundler from interfering
           sh command
         end
       rescue Exception => e
