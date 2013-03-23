@@ -8,7 +8,9 @@ rspec-rails-2.
 ### System
 
     git
-    sqlite3 # for rspec-rails
+    sqlite3  # for rspec-rails
+    libxml2  # specifically the dev headers for nokogiri (rspec-rails and rspec-core)
+    libxslt2 # specifically the dev headers for nokogiri (rspec-rails and rspe-ccore)
 
 ### Ruby
 
