@@ -19,10 +19,7 @@ def run_command(command, opts={})
     next if [opts[:except]].flatten.compact.include?(dir)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
-      puts "="*50
-      puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
-      puts "# " + command
-      puts "-"*40
+      puts "#{'='*3} #{dir} #{'='*(40 - dir.length)}"
       begin
         Bundler.with_clean_env do
           ENV['NOEXEC_DISABLE'] = "1" # prevent rubygems-bundler from interfering
