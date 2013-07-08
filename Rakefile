@@ -129,6 +129,7 @@ namespace :git do
     raise("rake git:checkout[VERSION]") unless args[:version]
     run_command "git checkout #{args[:version]}"
   end
+  task :co, [:version] => :checkout
 
   task :st => :status
   task :update => :pull
