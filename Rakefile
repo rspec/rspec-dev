@@ -169,7 +169,7 @@ namespace :bundle do
   task :install do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     `bundle install --binstubs`
-    run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
+    run_command 'bundle install --binstubs --gemfile ./Gemfile'
   end
 end
 
