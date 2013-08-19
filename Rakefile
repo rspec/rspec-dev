@@ -3,7 +3,7 @@ require 'fileutils'
 require 'pathname'
 require 'bundler'
 
-Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails']
+Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails', 'rspec-collection_matchers']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
