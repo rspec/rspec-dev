@@ -54,8 +54,9 @@ like this:
         rspec-rails        # rspec 2 for rails 3
           tmp
             aruba          # gets generated when running rspec-rails' cukes
-            example_app    # gets generated when running rspec-rails' specs 
+            example_app    # gets generated when running rspec-rails' specs
         rspec              # meta-gem that depends on core, expectations, and mocks
+        rspec-collection_matchers # optional matchers for syntax such as have(n).items
 
 After the initial clone you can run `rake git:pull` from the rspec-dev
 directory to update all of the rspec repos (in repos).
@@ -86,6 +87,7 @@ listed below. If you submit an issue, please include a link to either of:
 * [https://github.com/rspec/rspec-expectations/issues](https://github.com/rspec/rspec-expectations/issues)
 * [https://github.com/rspec/rspec-mocks/issues](https://github.com/rspec/rspec-mocks/issues)
 * [https://github.com/rspec/rspec-rails/issues](https://github.com/rspec/rspec-rails/issues)
+* [https://github.com/rspec/rspec-collection_matchers/issues](https://github.com/rspec/rspec-collection_matchers/issues)
 
 # Troubleshooting the environment
 
@@ -127,8 +129,9 @@ by submitting a patch to this README.
 
 # Also see
 
-* [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
-* [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
-* [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
-* [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
-* [http://github.com/rspec/rspec-rails](http://github.com/rspec/rspec-rails)
+* [https://github.com/rspec/rspec](https://github.com/rspec/rspec)
+* [https://github.com/rspec/rspec-core](https://github.com/rspec/rspec-core)
+* [https://github.com/rspec/rspec-expectations](https://github.com/rspec/rspec-expectations)
+* [https://github.com/rspec/rspec-mocks](https://github.com/rspec/rspec-mocks)
+* [https://github.com/rspec/rspec-rails](https://github.com/rspec/rspec-rails)
+* [https://github.com/rspec/rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers)
