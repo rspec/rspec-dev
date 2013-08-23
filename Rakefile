@@ -19,10 +19,7 @@ def run_command(command, opts={})
     next if [opts[:except]].flatten.compact.include?(dir)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
-      puts "="*50
-      puts "# " + path.to_s.sub(/#{File.dirname(__FILE__)}\//,'')
-      puts "# " + command
-      puts "-"*40
+      puts "#{'='*3} #{dir} #{'='*(40 - dir.length)}"
       begin
         Bundler.with_clean_env do
           ENV['NOEXEC_DISABLE'] = "1" # prevent rubygems-bundler from interfering
@@ -132,6 +129,7 @@ namespace :git do
     raise("rake git:checkout[VERSION]") unless args[:version]
     run_command "git checkout #{args[:version]}"
   end
+  task :co, [:version] => :checkout
 
   task :st => :status
   task :update => :pull
@@ -171,8 +169,7 @@ namespace :bundle do
   task :install do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     `bundle install --binstubs`
-    run_command 'bundle install --binstubs --gemfile ./Gemfile', :except => 'rspec-rails'
-    run_command 'thor version:use 3.2.8', :only => 'rspec-rails'
+    run_command 'bundle install --binstubs --gemfile ./Gemfile'
   end
 end
 
