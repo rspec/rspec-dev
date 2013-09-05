@@ -11,3 +11,4 @@ repos/*
 !repos/.gitkeep
 !repos/.yardopts
 .rvmrc
+bundle
