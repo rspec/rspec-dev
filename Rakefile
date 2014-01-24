@@ -2,6 +2,8 @@ require 'rake'
 require 'fileutils'
 require 'pathname'
 require 'bundler'
+require 'time'
+require 'date'
 
 Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails', 'rspec-support']
 BaseRspecPath = Pathname.new(Dir.pwd)
@@ -170,6 +172,53 @@ namespace :bundle do
     `gem install bundler` unless `gem list`.split("\n").detect {|g| g =~ /^bundler/}
     `bundle install --binstubs`
     run_command 'bundle install --binstubs --gemfile ./Gemfile'
+  end
+end
+
+namespace :travis do
+  ReadFile = Struct.new(:file_name, :contents)
+
+  def assert_clean_git_status(name)
+    unless `git status`.include?('nothing to commit (working directory clean)')
+      abort "#{name} has uncommitted changes"
+    end
+  end
+
+  desc "Update travis build files"
+  task :update_files do
+    each_project { |proj| assert_clean_git_status(proj) }
+
+    file_names = Dir["./travis/**/{*,.*}"].select { |f| File.file?(f) }
+    files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f)) }
+
+    with_comments = files.map do |file|
+      comments_added = false
+      lines = file.contents.lines.each_with_object([]) do |line, all|
+        if !comments_added && !line.start_with?('#!')
+          all.concat([
+            "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
+          ])
+          comments_added = true
+        end
+
+        all << line
+      end
+
+      ReadFile.new(file.file_name, lines.join)
+    end
+
+    each_project do |name|
+      next if %w[ rspec rspec-rails ].include?(name)
+      sh "git checkout -b update-travis-build-scripts-#{Date.today.iso8601}"
+
+      with_comments.each do |file|
+        File.write(ReposPath + "#{name}/#{file.file_name}", file.contents)
+      end
+
+      sh "git add ."
+      sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
+    end
   end
 end
 
