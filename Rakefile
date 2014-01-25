@@ -245,8 +245,8 @@ namespace :travis do
       end
 
       File.write("./maintenance-branch", "master") unless File.exist?('./maintenance-branch')
-      File.delete("./maintenence-branch") if File.exist?('./maintenence-branch')
-      File.delete("script/test_all") if File.exist?('script/test_all')
+      sh "git rm ./maintenence-branch" if File.exist?('./maintenence-branch')
+      sh "git rm script/test_all" if File.exist?('script/test_all')
 
       sh "git add ."
       sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
