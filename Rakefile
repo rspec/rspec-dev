@@ -35,8 +35,11 @@ def run_command(command, opts={})
   end
 end
 
-def each_project
-  Projects.each do |project|
+def each_project(options = {})
+  projects = Projects
+  projects -= Array(options[:except])
+
+  projects.each do |project|
     Dir.chdir("repos/#{project}") do
       puts "="*50
       puts "# #{project}"
@@ -175,6 +178,22 @@ namespace :bundle do
   end
 end
 
+def github_client
+  @github_client ||= begin
+    require 'octokit'
+    token  = File.read(BaseRspecPath + "config/github_oauth_token.txt").strip
+    Octokit::Client.new(:access_token => token)
+  end
+end
+
+def create_pull_request(project_name, branch, base="master")
+  github_client.create_pull_request(
+    "rspec/#{project_name}", base, branch,
+    "Updates from rspec-dev (#{Date.today.iso8601})",
+    "These are some updates, generated from rspec-dev's rake tasks."
+  )
+end
+
 namespace :travis do
   ReadFile = Struct.new(:file_name, :contents)
 
@@ -184,14 +203,15 @@ namespace :travis do
     end
   end
 
-  desc "Update travis build files"
-  task :update_files do
-    each_project { |proj| assert_clean_git_status(proj) }
+  def each_project_with_common_travis_build(&b)
+    each_project(except: %w[ rspec rspec-rails ], &b)
+  end
 
+  def travis_files_with_comments
     file_names = Dir["./travis/**/{*,.*}"].select { |f| File.file?(f) }
     files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f)) }
 
-    with_comments = files.map do |file|
+    files.map do |file|
       comments_added = false
       lines = file.contents.lines.each_with_object([]) do |line, all|
         if !comments_added && !line.start_with?('#!')
@@ -207,17 +227,41 @@ namespace :travis do
 
       ReadFile.new(file.file_name, lines.join)
     end
+  end
 
-    each_project do |name|
-      next if %w[ rspec rspec-rails ].include?(name)
-      sh "git checkout -b update-travis-build-scripts-#{Date.today.iso8601}"
+  def update_travis_files_in_repos
+    branch_name = "update-travis-build-scripts-#{Date.today.iso8601}"
 
-      with_comments.each do |file|
+    each_project_with_common_travis_build { |proj| assert_clean_git_status(proj) }
+    files = travis_files_with_comments
+
+    each_project_with_common_travis_build do |name|
+      sh "git checkout -b #{branch_name}"
+
+      files.each do |file|
         File.write(ReposPath + "#{name}/#{file.file_name}", file.contents)
       end
 
       sh "git add ."
       sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
+    end
+
+    branch_name
+  end
+
+  desc "Update travis build files"
+  task :update_files do
+    update_travis_files_in_repos
+  end
+
+  desc "Updates the travis files and creates a PR"
+  task :create_pr_with_updates do
+    branch = update_travis_files_in_repos
+
+    each_project_with_common_travis_build do |name|
+      sh "git push origin #{branch}"
+      create_pull_request(name, branch)
+      sh "git checkout master && git branch -D #{branch}" # no need to keep it around
     end
   end
 end
