@@ -244,6 +244,10 @@ namespace :travis do
         FileUtils.chmod(file.mode, full_file_name) # ensure it is executable
       end
 
+      unless File.exist?('./maintenence-branch')
+        File.write("./maintenence-branch", "master")
+      end
+
       sh "git add ."
       sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
     end
