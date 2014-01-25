@@ -1,7 +1,7 @@
 # idea taken from: http://blog.headius.com/2010/03/jruby-startup-time-tips.html
 export JRUBY_OPTS='-X-C' # disable JIT since these processes are so short lived
 SPECS_HAVE_RUN_FILE=specs.out
-MAINTENENCE_BRANCH=`cat maintenence-branch`
+MAINTENANCE_BRANCH=`cat maintenance-branch`
 BUNDLE_INSTALL_FLAGS=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
 
 # Taken from:
@@ -51,7 +51,7 @@ function is_mri_192 {
 
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
-    travis_retry git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENENCE_BRANCH
+    travis_retry git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH
   fi;
 }
 
