@@ -14,4 +14,3 @@ if is_mri; then
 else
   echo "Skipping the rest of the build on non-MRI rubies"
 fi
-
