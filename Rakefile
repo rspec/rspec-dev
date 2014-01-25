@@ -195,7 +195,7 @@ def create_pull_request(project_name, branch, base="master")
 end
 
 namespace :travis do
-  ReadFile = Struct.new(:file_name, :contents)
+  ReadFile = Struct.new(:file_name, :contents, :mode)
 
   def assert_clean_git_status(name)
     unless `git status`.include?('nothing to commit (working directory clean)')
@@ -209,7 +209,7 @@ namespace :travis do
 
   def travis_files_with_comments
     file_names = Dir["./travis/**/{*,.*}"].select { |f| File.file?(f) }
-    files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f)) }
+    files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f), File.stat(f).mode) }
 
     files.map do |file|
       comments_added = false
@@ -225,7 +225,7 @@ namespace :travis do
         all << line
       end
 
-      ReadFile.new(file.file_name, lines.join)
+      ReadFile.new(file.file_name, lines.join, file.mode)
     end
   end
 
@@ -239,7 +239,9 @@ namespace :travis do
       sh "git checkout -b #{branch_name}"
 
       files.each do |file|
-        File.write(ReposPath + "#{name}/#{file.file_name}", file.contents)
+        full_file_name = ReposPath + "#{name}/#{file.file_name}"
+        File.write(full_file_name, file.contents)
+        FileUtils.chmod(file.mode, full_file_name) # ensure it is executable
       end
 
       sh "git add ."
@@ -341,7 +343,7 @@ end
 task :rdoc => ["doc:clobber", "doc:generate"]
 
 task :contributors do
-  logs = Projects.inject("") do |logs, dir|
+  Projects.inject("") do |logs, dir|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       logs << `git log`
