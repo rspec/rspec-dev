@@ -1,0 +1,4 @@
+Generate a personal access token here:
+https://github.com/settings/applications
+
+Then put it in a file in this directory called "github_oauth_token.txt".

@@ -2,6 +2,8 @@ require 'rake'
 require 'fileutils'
 require 'pathname'
 require 'bundler'
+require 'time'
+require 'date'
 
 Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails', 'rspec-support']
 BaseRspecPath = Pathname.new(Dir.pwd)
@@ -33,8 +35,11 @@ def run_command(command, opts={})
   end
 end
 
-def each_project
-  Projects.each do |project|
+def each_project(options = {})
+  projects = Projects
+  projects -= Array(options[:except])
+
+  projects.each do |project|
     Dir.chdir("repos/#{project}") do
       puts "="*50
       puts "# #{project}"
@@ -173,6 +178,100 @@ namespace :bundle do
   end
 end
 
+def github_client
+  @github_client ||= begin
+    require 'octokit'
+    token  = File.read(BaseRspecPath + "config/github_oauth_token.txt").strip
+    Octokit::Client.new(:access_token => token)
+  end
+end
+
+def create_pull_request(project_name, branch, base="master")
+  github_client.create_pull_request(
+    "rspec/#{project_name}", base, branch,
+    "Updates from rspec-dev (#{Date.today.iso8601})",
+    "These are some updates, generated from rspec-dev's rake tasks."
+  )
+end
+
+namespace :travis do
+  ReadFile = Struct.new(:file_name, :contents, :mode)
+
+  def assert_clean_git_status(name)
+    unless `git status`.include?('nothing to commit (working directory clean)')
+      abort "#{name} has uncommitted changes"
+    end
+  end
+
+  def each_project_with_common_travis_build(&b)
+    each_project(except: %w[ rspec rspec-rails ], &b)
+  end
+
+  def travis_files_with_comments
+    file_names = Dir["./travis/**/{*,.*}"].select { |f| File.file?(f) }
+    files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f), File.stat(f).mode) }
+
+    files.map do |file|
+      comments_added = false
+      lines = file.contents.lines.each_with_object([]) do |line, all|
+        if !comments_added && !line.start_with?('#!')
+          all.concat([
+            "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
+          ])
+          comments_added = true
+        end
+
+        all << line
+      end
+
+      ReadFile.new(file.file_name, lines.join, file.mode)
+    end
+  end
+
+  def update_travis_files_in_repos
+    branch_name = "update-travis-build-scripts-#{Date.today.iso8601}"
+
+    each_project_with_common_travis_build { |proj| assert_clean_git_status(proj) }
+    files = travis_files_with_comments
+
+    each_project_with_common_travis_build do |name|
+      sh "git checkout -b #{branch_name}"
+
+      files.each do |file|
+        full_file_name = ReposPath + "#{name}/#{file.file_name}"
+        File.write(full_file_name, file.contents)
+        FileUtils.chmod(file.mode, full_file_name) # ensure it is executable
+      end
+
+      File.write("./maintenance-branch", "master") unless File.exist?('./maintenance-branch')
+      sh "git rm ./maintenence-branch" if File.exist?('./maintenence-branch')
+      sh "git rm script/test_all" if File.exist?('script/test_all')
+
+      sh "git add ."
+      sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
+    end
+
+    branch_name
+  end
+
+  desc "Update travis build files"
+  task :update_files do
+    update_travis_files_in_repos
+  end
+
+  desc "Updates the travis files and creates a PR"
+  task :create_pr_with_updates do
+    branch = update_travis_files_in_repos
+
+    each_project_with_common_travis_build do |name|
+      sh "git push origin #{branch}"
+      create_pull_request(name, branch)
+      sh "git checkout master && git branch -D #{branch}" # no need to keep it around
+    end
+  end
+end
+
 task :setup => ["git:clone", "bundle:install"]
 
 task :default do
@@ -248,7 +347,7 @@ end
 task :rdoc => ["doc:clobber", "doc:generate"]
 
 task :contributors do
-  logs = Projects.inject("") do |logs, dir|
+  Projects.inject("") do |logs, dir|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
       logs << `git log`
