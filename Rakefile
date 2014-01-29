@@ -186,7 +186,14 @@ def github_client
   end
 end
 
-def create_pull_request(project_name, branch, base="master")
+BASE_BRANCH = ENV.fetch('BRANCH', 'master')
+BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'master'
+                              3
+                            else
+                              Integer(BASE_BRANCH[/^\d+/])
+                            end
+
+def create_pull_request(project_name, branch, base=BASE_BRANCH)
   github_client.create_pull_request(
     "rspec/#{project_name}", base, branch,
     "Updates from rspec-dev (#{Date.today.iso8601})",
@@ -204,7 +211,9 @@ namespace :travis do
   end
 
   def each_project_with_common_travis_build(&b)
-    each_project(except: %w[ rspec rspec-rails ], &b)
+    except = %w[ rspec rspec-rails ]
+    except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
+    each_project(except: except, &b)
   end
 
   def travis_files_with_comments
@@ -230,10 +239,15 @@ namespace :travis do
   end
 
   def update_travis_files_in_repos
-    branch_name = "update-travis-build-scripts-#{Date.today.iso8601}"
+    branch_name = "update-travis-build-scripts-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
 
     each_project_with_common_travis_build { |proj| assert_clean_git_status(proj) }
     files = travis_files_with_comments
+
+    each_project_with_common_travis_build do |name|
+      sh "git checkout #{BASE_BRANCH}"
+      sh "git pull --rebase"
+    end
 
     each_project_with_common_travis_build do |name|
       sh "git checkout -b #{branch_name}"
@@ -244,7 +258,7 @@ namespace :travis do
         FileUtils.chmod(file.mode, full_file_name) # ensure it is executable
       end
 
-      File.write("./maintenance-branch", "master") unless File.exist?('./maintenance-branch')
+      File.write("./maintenance-branch", BASE_BRANCH) unless File.exist?('./maintenance-branch')
       sh "git rm ./maintenence-branch" if File.exist?('./maintenence-branch')
       sh "git rm script/test_all" if File.exist?('script/test_all')
 
@@ -267,7 +281,7 @@ namespace :travis do
     each_project_with_common_travis_build do |name|
       sh "git push origin #{branch}"
       create_pull_request(name, branch)
-      sh "git checkout master && git branch -D #{branch}" # no need to keep it around
+      sh "git checkout #{BASE_BRANCH} && git branch -D #{branch}" # no need to keep it around
     end
   end
 end
