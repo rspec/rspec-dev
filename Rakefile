@@ -205,7 +205,7 @@ namespace :travis do
   ReadFile = Struct.new(:file_name, :contents, :mode)
 
   def assert_clean_git_status(name)
-    unless `git status`.include?('nothing to commit (working directory clean)')
+    unless `git status` =~ /nothing to commit,? \(?working directory clean\)?/
       abort "#{name} has uncommitted changes"
     end
   end
