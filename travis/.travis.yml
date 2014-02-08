@@ -10,11 +10,12 @@ rvm:
   - ruby-head
   - ree
   - jruby-18mode
-  - jruby-19mode
+  - jruby
   - jruby-head
   - rbx
 matrix:
   allow_failures:
+    - rvm: jruby-18mode
     - rvm: jruby-head
     - rvm: ruby-head
   fast_finish: true
