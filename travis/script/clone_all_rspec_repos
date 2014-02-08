@@ -10,7 +10,7 @@ if is_mri; then
   clone_repo "rspec-expectations"
   clone_repo "rspec-mocks"
 
-  if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ]; then
+  if rspec_support_compatible; then
     clone_repo "rspec-support"
   fi
 
