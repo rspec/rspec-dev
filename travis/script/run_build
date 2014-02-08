@@ -11,7 +11,7 @@ if is_mri; then
   run_spec_suite_for "rspec-expectations"
   run_spec_suite_for "rspec-mocks"
 
-  if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ]; then
+  if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ] && [ "$MAINTENANCE_BRANCH" != "2-14-maintenance" ]; then
     run_spec_suite_for "rspec-support"
   fi
 else
