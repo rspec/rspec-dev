@@ -250,6 +250,15 @@ namespace :travis do
     end
 
     each_project_with_common_travis_build do |name|
+      if system("git show-branch #{branch_name} > /dev/null 2> /dev/null")
+        puts "Branch #{branch_name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
+        input = STDIN.gets.downcase
+        if input =~ /^y/
+          `git branch -D #{branch_name}`
+        elsif input =~ /^r(?:ename)? (.*)$/
+          branch_name = $1
+        end
+      end
       sh "git checkout -b #{branch_name}"
 
       files.each do |file|
