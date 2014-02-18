@@ -23,10 +23,7 @@ def run_command(command, opts={})
     FileUtils.cd(path) do
       puts "#{'='*3} #{dir} #{'='*(40 - dir.length)}"
       begin
-        Bundler.with_clean_env do
-          ENV['NOEXEC_DISABLE'] = "1" # prevent rubygems-bundler from interfering
-          sh command
-        end
+        Bundler.clean_system(command)
       rescue Exception => e
         puts e.backtrace
       end
