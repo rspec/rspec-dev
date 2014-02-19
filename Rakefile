@@ -366,14 +366,15 @@ end
 
 task :rdoc => ["doc:clobber", "doc:generate"]
 
+desc "List contributors to RSpec"
 task :contributors do
-  Projects.inject("") do |logs, dir|
+  logs = Projects.each_with_object("") do |dir, _logs|
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
-      logs << `git log`
+      _logs << `git log`
     end
-    logs
   end
+
   authors = logs.split("\n").grep(/^Author/).
     map{|l| l.sub(/Author: /,'')}.
     map{|l| l.split('<').first}.
