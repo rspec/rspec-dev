@@ -58,7 +58,7 @@ function rspec_support_compatible {
 }
 
 function documentation_enforced {
-  if [ "$TRAVIS_REPO_SLUG" != "rspec/rspec-support" ]; then
+  if [ -x ./bin/yard ]; then
     return 0
   else
     return 1
