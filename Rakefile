@@ -285,8 +285,15 @@ namespace :travis do
     branch = update_travis_files_in_repos
 
     each_project_with_common_travis_build do |name|
-      sh "git push origin #{branch}"
-      create_pull_request(name, branch)
+      unless system("git push origin #{branch}")
+        puts "Push failed, force?"
+        if STDIN.gets.downcase == /^y/
+          sh "git push origin +#{branch}"
+        end
+        create_pull_request(name, branch) rescue nil
+      else
+        create_pull_request(name, branch)
+      end
       sh "git checkout #{BASE_BRANCH} && git branch -D #{branch}" # no need to keep it around
     end
   end
