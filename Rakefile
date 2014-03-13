@@ -287,7 +287,7 @@ namespace :travis do
     each_project_with_common_travis_build do |name|
       unless system("git push origin #{branch}")
         puts "Push failed, force?"
-        if STDIN.gets.downcase == /^y/
+        if STDIN.gets.downcase =~ /^y/
           sh "git push origin +#{branch}"
         end
         create_pull_request(name, branch) rescue nil
