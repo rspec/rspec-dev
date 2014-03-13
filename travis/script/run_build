@@ -5,6 +5,10 @@ source script/functions.sh
 run_specs_and_record_done
 run_cukes
 
+if documentation_enforced; then
+  check_documentation_coverage
+fi
+
 if is_mri; then
   run_specs_one_by_one
   run_spec_suite_for "rspec-core"
