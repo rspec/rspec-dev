@@ -1,7 +1,7 @@
-# Rspec 2 Development
+# RSpec Development
 
-This repository is for anyone interested in contributing to rspec-2 or
-rspec-rails-2.
+This repository is for anyone interested in contributing to rspec or
+rspec-rails.
 
 ## Environment
 
