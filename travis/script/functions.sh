@@ -57,6 +57,13 @@ function rspec_support_compatible {
   fi
 }
 
+function documentation_enforced {
+  if [ -x ./bin/yard ]; then
+    return 0
+  else
+    return 1
+  fi
+}
 
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
@@ -117,4 +124,18 @@ function run_spec_suite_for {
     run_specs_and_record_done
     popd
   fi;
+}
+
+function check_documentation_coverage {
+  bin/yard stats --list-undoc | ruby -e "
+    while line = gets
+      coverage ||= line[/([\d\.]+)% documented/, 1]
+      puts line
+    end
+
+    unless Float(coverage) == 100
+      puts \"\n\nMissing documentation coverage (currently at #{coverage}%)\"
+      exit(1)
+    end
+  "
 }
