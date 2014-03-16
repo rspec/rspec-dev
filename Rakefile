@@ -142,7 +142,7 @@ namespace :git do
 
     FileUtils.cd(ReposPath) do
       Projects.each do |repo|
-        unless File.exists?(repo)
+        unless File.exist?(repo)
           system "git clone #{url_prefix}/#{repo}.git"
         end
       end
