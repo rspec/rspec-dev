@@ -2,7 +2,6 @@
 export JRUBY_OPTS='-X-C' # disable JIT since these processes are so short lived
 SPECS_HAVE_RUN_FILE=specs.out
 MAINTENANCE_BRANCH=`cat maintenance-branch`
-BUNDLE_INSTALL_FLAGS=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
 
 # Taken from:
 # https://github.com/travis-ci/travis-build/blob/e9314616e182a23e6a280199cd9070bfc7cae548/lib/travis/build/script/templates/header.sh#L34-L53
@@ -126,7 +125,8 @@ function run_spec_suite_for {
     echo "Running specs for $1"
     echo
     unset BUNDLE_GEMFILE
-    travis_retry bundle install $BUNDLE_INSTALL_FLAGS
+    bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
+    travis_retry bundle install $bundle_install_flags
     run_specs_and_record_done
     popd
   fi;
