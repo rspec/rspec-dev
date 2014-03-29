@@ -3,8 +3,6 @@ set -e -x
 source script/functions.sh
 
 if is_mri; then
-  set_rails_version_for_rspec_rails
-
   pushd ..
 
   clone_repo "rspec"
