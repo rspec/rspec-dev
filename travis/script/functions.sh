@@ -49,6 +49,12 @@ function is_mri_192 {
   fi
 }
 
+function set_rails_version_for_rspec_rails {
+  if ruby -e "exit(RUBY_VERSION < '1.9.3')"; then
+    export RAILS_VERSION=3.2.17
+  fi
+}
+
 function rspec_support_compatible {
   if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ] && [ "$MAINTENANCE_BRANCH" != "2-14-maintenance" ]; then
     return 0
