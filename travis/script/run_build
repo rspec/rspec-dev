@@ -15,6 +15,9 @@ if is_mri; then
   run_spec_suite_for "rspec-expectations"
   run_spec_suite_for "rspec-mocks"
 
+  set_rails_version_for_rspec_rails
+  run_spec_suite_for "rspec-rails"
+
   if rspec_support_compatible; then
     run_spec_suite_for "rspec-support"
   fi
