@@ -210,7 +210,7 @@ namespace :travis do
   def each_project_with_common_travis_build(&b)
     except = %w[ rspec rspec-rails ]
     except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
-    each_project(except: except, &b)
+    each_project(:except => except, &b)
   end
 
   def travis_files_with_comments
