@@ -23,6 +23,4 @@ matrix:
     - rvm: jruby-head
     - rvm: ruby-head
     - rvm: rbx
-    # Until https://github.com/travis-ci/travis-ci/issues/2220 is fixed
-    - rvm: 2.1.0
   fast_finish: true
