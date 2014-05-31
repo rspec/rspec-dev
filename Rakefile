@@ -373,23 +373,82 @@ end
 
 task :rdoc => ["doc:clobber", "doc:generate"]
 
-desc "List contributors to RSpec"
-task :contributors do
-  logs = Projects.each_with_object("") do |dir, _logs|
-    path = ReposPath.join(dir)
-    FileUtils.cd(path) do
-      _logs << `git log`
+desc "Lists stas generated from the logs for the provided commit ranges"
+task :version_stats, :commit_ranges do |t, args|
+  projects = Projects - ["rspec-support"]
+
+  puts
+  puts "### Combined: "
+  puts
+  version_stats = VersionStats.new(args[:commit_ranges].split("|"), projects)
+  version_stats.print
+
+  projects.each do |project|
+    puts
+    puts "### #{project}: "
+    puts
+    version_stats = VersionStats.new(args[:commit_ranges].split("|"), project)
+    version_stats.print
+  end
+end
+
+class VersionStats
+  attr_reader :commit_ranges, :dirs
+
+  def initialize(commit_ranges, dirs)
+    @commit_ranges = commit_ranges
+    @dirs = Array(dirs)
+  end
+
+  def print
+    puts "#{authors.count} contributors: #{authors.join(", ")}"
+    puts
+    puts "Total Commits: #{commits}"
+    puts
+    puts "Merged pull requests: #{merged_pull_requests}"
+  end
+
+  def authors
+    @authors ||= begin
+      logs = @dirs.each_with_object("") do |dir, _logs|
+        cd(dir) do
+          commit_ranges.each do |range|
+            _logs << `git log #{range} | grep Author | sort | uniq`
+          end
+        end
+      end
+
+      authors = logs.split("\n").
+        map{|l| l.sub(/Author: /,'')}.
+        map{|l| l.split('<').first}.
+        map{|l| l.split(' and ')}.flatten.
+        map{|l| l.split('+')}.flatten.
+        map{|l| l.split(',')}.flatten.
+        map{|l| l.strip}.
+        uniq.compact.reject{|n| n == ""}.sort
     end
   end
 
-  authors = logs.split("\n").grep(/^Author/).
-    map{|l| l.sub(/Author: /,'')}.
-    map{|l| l.split('<').first}.
-    map{|l| l.split('and')}.flatten.
-    map{|l| l.split('+')}.flatten.
-    map{|l| l.split(',')}.flatten.
-    map{|l| l.strip}.
-    uniq.compact.reject{|n| n == ""}.sort
-  puts "#{authors.count} contributors: "
-  puts authors.compact.join(", ")
+  def cd(dir)
+    path = ReposPath.join(dir)
+    FileUtils.cd(path) { return yield }
+  end
+
+  def commits
+    @commits ||= count_commits("")
+  end
+
+  def merged_pull_requests
+    @merged_pull_requests ||= count_commits('grep -v Revert | grep "Merge pull request" |')
+  end
+
+private
+
+  def count_commits(command_before_count)
+    @dirs.reduce(0) do |count_1, dir|
+      commit_ranges.reduce(0) do |count_2, range|
+        cd(dir) { Integer(`git log #{range} --oneline | #{command_before_count} wc -l`) } + count_2
+      end + count_1
+    end
+  end
 end
