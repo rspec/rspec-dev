@@ -5,7 +5,7 @@ require 'bundler'
 require 'time'
 require 'date'
 
-Projects = ['rspec-expectations', 'rspec-mocks', 'rspec-core', 'rspec', 'rspec-rails', 'rspec-support']
+Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
