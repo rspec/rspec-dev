@@ -100,6 +100,9 @@ namespace :gem do
   end
 end
 
+desc "Changes to a different branch on all repos and re-bundles"
+task :change_branch, [:version] => ["git:checkout", "git:pull", "bundle:unlock", "bundle:install"]
+
 namespace :dev do
   desc "Pair dev, you must supply the PAIR1, PAIR2 arguments"
   task :pair do
