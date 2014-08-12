@@ -74,7 +74,7 @@ function style_and_lint_enforced {
 
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
-    travis_retry git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH
+    travis_retry eval "git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH"
   fi;
 }
 
@@ -128,7 +128,7 @@ function run_spec_suite_for {
     echo
     unset BUNDLE_GEMFILE
     bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
-    travis_retry bundle install $bundle_install_flags
+    travis_retry eval "bundle install $bundle_install_flags"
     run_specs_and_record_done
     popd
   fi;
