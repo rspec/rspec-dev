@@ -211,18 +211,20 @@ namespace :travis do
   end
 
   def each_project_with_common_travis_build(&b)
-    except = %w[ rspec rspec-rails ]
+    except = %w[ rspec ]
     except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
     each_project(:except => except, &b)
   end
 
   def travis_files_with_comments
-    file_names = Dir["./travis/**/{*,.*}"].select { |f| File.file?(f) }
-    files = file_names.map { |f| ReadFile.new(f.sub(%r|\./travis/|, ''), File.read(f), File.stat(f).mode) }
+    travis_root = BaseRspecPath.join('travis')
+    file_names = Pathname.glob(travis_root.join('**', '{*,.*}')).select do |f|
+      f.file?
+    end
 
-    files.map do |file|
+    file_names.map do |file|
       comments_added = false
-      lines = file.contents.lines.each_with_object([]) do |line, all|
+      lines = file.each_line.each_with_object([]) do |line, all|
         if !comments_added && !line.start_with?('#!')
           all.concat([
             "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
@@ -234,15 +236,40 @@ namespace :travis do
         all << line
       end
 
-      ReadFile.new(file.file_name, lines.join, file.mode)
+      ReadFile.new(
+        file.relative_path_from(travis_root),
+        lines.join,
+        file.stat.mode
+      )
     end
+  end
+
+  def update_maintenance_branch
+    File.write("./maintenance-branch", BASE_BRANCH) unless File.exist?('./maintenance-branch')
+  end
+
+  def confirm_branch_name(name)
+    return name unless system("git show-branch #{name} > /dev/null 2>&1")
+
+    puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
+    case STDIN.gets.downcase
+    when /^y/
+      `git branch -D #{name}`
+    when /^r(?:ename)? (.*)$/
+      name = $1
+    else
+      abort "Unknown option: #{input}"
+    end
+
+    name
   end
 
   def update_travis_files_in_repos
     branch_name = "update-travis-build-scripts-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
 
-    each_project_with_common_travis_build { |proj| assert_clean_git_status(proj) }
-    files = travis_files_with_comments
+    each_project_with_common_travis_build do |proj|
+      assert_clean_git_status(proj)
+    end
 
     each_project_with_common_travis_build do |name|
       sh "git checkout #{BASE_BRANCH}"
@@ -250,26 +277,18 @@ namespace :travis do
     end
 
     each_project_with_common_travis_build do |name|
-      if system("git show-branch #{branch_name} > /dev/null 2> /dev/null")
-        puts "Branch #{branch_name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
-        input = STDIN.gets.downcase
-        if input =~ /^y/
-          `git branch -D #{branch_name}`
-        elsif input =~ /^r(?:ename)? (.*)$/
-          branch_name = $1
-        end
-      end
+      branch_name = confirm_branch_name(branch_name)
       sh "git checkout -b #{branch_name}"
 
-      files.each do |file|
-        full_file_name = ReposPath + "#{name}/#{file.file_name}"
-        File.write(full_file_name, file.contents)
-        FileUtils.chmod(file.mode, full_file_name) # ensure it is executable
+      travis_files_with_comments.each do |file|
+        # TODO: Determine a cleaner way to exclude one file from rspec-rails
+        next if name == 'rspec-rails' && file.file_name.fnmatch?('.travis.yml')
+        full_file_name = ReposPath.join(name, file.file_name)
+        full_file_name.write(file.contents)
+        full_file_name.chmod(file.mode) # ensure executables are set
       end
 
-      File.write("./maintenance-branch", BASE_BRANCH) unless File.exist?('./maintenance-branch')
-      sh "git rm ./maintenence-branch" if File.exist?('./maintenence-branch')
-      sh "git rm script/test_all" if File.exist?('script/test_all')
+      update_maintenance_branch
 
       sh "git add ."
       sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
