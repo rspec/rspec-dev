@@ -3,8 +3,8 @@ set -e -x
 source script/functions.sh
 
 # Allow repos to override the default functions and add their own
-if [ -f script/custom_functions.sh ]; then
-  source script/custom_functions.sh
+if [ -f script/custom_build_functions.sh ]; then
+  source script/custom_build_functions.sh
 fi
 
 run_specs_and_record_done

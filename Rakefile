@@ -264,6 +264,17 @@ namespace :travis do
     name
   end
 
+  def run_if_exists(script_file)
+    sh script_file if File.exist?(script_file)
+  end
+
+  def around_update_travis_build
+    run_if_exists './script/before_update_travis_build.sh'
+    yield if block_given?
+  ensure
+    run_if_exists './script/after_update_travis_build.sh'
+  end
+
   def update_travis_files_in_repos
     branch_name = "update-travis-build-scripts-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
 
@@ -280,15 +291,15 @@ namespace :travis do
       branch_name = confirm_branch_name(branch_name)
       sh "git checkout -b #{branch_name}"
 
-      travis_files_with_comments.each do |file|
-        # TODO: Determine a cleaner way to exclude one file from rspec-rails
-        next if name == 'rspec-rails' && file.file_name.fnmatch?('.travis.yml')
-        full_file_name = ReposPath.join(name, file.file_name)
-        full_file_name.write(file.contents)
-        full_file_name.chmod(file.mode) # ensure executables are set
-      end
+      around_update_travis_build do
+        travis_files_with_comments.each do |file|
+          full_file_name = ReposPath.join(name, file.file_name)
+          full_file_name.write(file.contents)
+          full_file_name.chmod(file.mode) # ensure executables are set
+        end
 
-      update_maintenance_branch
+        update_maintenance_branch
+      end
 
       sh "git add ."
       sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
