@@ -11,6 +11,8 @@ repos/*
 !repos/.gitkeep
 !repos/.yardopts
 .rvmrc
+.ruby-version
+.ruby-gemset
 bundle
 
 config/github_oauth_token.txt
