@@ -114,6 +114,9 @@ SpaceAroundEqualsInParameterDefault:
 StringLiterals:
   Enabled: false
 
+Style/TrailingComma:
+  Enabled: false
+
 TrivialAccessors:
   AllowDSLWriters: true
   AllowPredicates: true

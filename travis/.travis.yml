@@ -1,3 +1,5 @@
+language: ruby
+sudo: false
 before_install:
   - "script/clone_all_rspec_repos"
   # Downgrade bundler to work around https://github.com/bundler/bundler/issues/3004
