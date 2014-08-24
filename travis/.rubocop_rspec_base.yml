@@ -114,6 +114,10 @@ SpaceAroundEqualsInParameterDefault:
 StringLiterals:
   Enabled: false
 
+# This rule favors constant names from the English standard library which we don't load.
+Style/SpecialGlobalVars:
+  Enabled: false
+
 Style/TrailingComma:
   Enabled: false
 
