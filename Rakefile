@@ -408,7 +408,7 @@ task :rdoc => ["doc:clobber", "doc:generate"]
 
 desc "Lists stas generated from the logs for the provided commit ranges"
 task :version_stats, :commit_ranges do |t, args|
-  projects = Projects - ["rspec-support"]
+  projects = Projects - ["rspec"]
 
   puts
   puts "### Combined: "
@@ -434,11 +434,9 @@ class VersionStats
   end
 
   def print
-    puts "#{authors.count} contributors: #{authors.join(", ")}"
-    puts
-    puts "Total Commits: #{commits}"
-    puts
-    puts "Merged pull requests: #{merged_pull_requests}"
+    puts "* **Total Commits**: #{commits}"
+    puts "* **Merged pull requests**: #{merged_pull_requests}"
+    puts "* **#{authors.count} contributors**: #{authors.join(", ")}"
   end
 
   def authors
