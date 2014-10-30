@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -x
+set -e
 source script/functions.sh
 
 # Allow repos to override the default functions and add their own
