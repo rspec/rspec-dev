@@ -137,12 +137,18 @@ function run_spec_suite_for {
 function check_documentation_coverage {
   bin/yard stats --list-undoc | ruby -e "
     while line = gets
+      has_warnings ||= line.start_with?('[warn]:')
       coverage ||= line[/([\d\.]+)% documented/, 1]
       puts line
     end
 
     unless Float(coverage) == 100
       puts \"\n\nMissing documentation coverage (currently at #{coverage}%)\"
+      exit(1)
+    end
+
+    if has_warnings
+      puts \"\n\nYARD emitted documentation warnings.\"
       exit(1)
     end
   "
