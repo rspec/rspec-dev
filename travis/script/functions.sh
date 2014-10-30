@@ -26,6 +26,47 @@ travis_retry() {
   return $result
 }
 
+# Taken from https://github.com/vcr/vcr/commit/fa96819c92b783ec0c794f788183e170e4f684b2
+# and https://github.com/vcr/vcr/commit/040aaac5370c68cd13c847c076749cd547a6f9b1
+nano_cmd="$(type -p gdate date | head -1)"
+nano_format="+%s%N"
+[ "$(uname -s)" != "Darwin" ] || nano_format="${nano_format/%N/000000000}"
+
+travis_time_start() {
+  travis_timer_id=$(printf %08x $(( RANDOM * RANDOM )))
+  travis_start_time=$($nano_cmd -u "$nano_format")
+  printf "travis_time:start:%s\r\e[0m" $travis_timer_id
+}
+
+travis_time_finish() {
+  local travis_end_time=$($nano_cmd -u "$nano_format")
+  local duration=$(($travis_end_time-$travis_start_time))
+  printf "travis_time:end:%s:start=%s,finish=%s,duration=%s\r\e[0m" \
+    $travis_timer_id $travis_start_time $travis_end_time $duration
+}
+
+fold() {
+  local name="$1"
+  local status=0
+  shift 1
+  if [ -n "$TRAVIS" ]; then
+    printf "travis_fold:start:%s\r\e[0m" "$name"
+    travis_time_start
+  fi
+
+  "$@" || status=$?
+
+  [ -z "$TRAVIS" ] || travis_time_finish
+
+  if [ "$status" -eq 0 ]; then
+    if [ -n "$TRAVIS" ]; then
+      printf "travis_fold:end:%s\r\e[0m" "$name"
+    fi
+  else
+    STATUS="$status"
+  fi
+}
+
 function is_mri {
   if ruby -e "exit(!defined?(RUBY_ENGINE) || RUBY_ENGINE == 'ruby')"; then
     # RUBY_ENGINE only returns 'ruby' on MRI.
@@ -74,7 +115,7 @@ function style_and_lint_enforced {
 
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
-    travis_retry eval "git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH"
+    fold "cloning $1" travis_retry eval "git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH"
   fi;
 }
 
@@ -159,13 +200,13 @@ function check_style_and_lint {
 }
 
 function run_all_spec_suites {
-  run_specs_one_by_one
-  run_spec_suite_for "rspec-core"
-  run_spec_suite_for "rspec-expectations"
-  run_spec_suite_for "rspec-mocks"
-  run_spec_suite_for "rspec-rails"
+  fold "one-by-one specs" run_specs_one_by_one
+  fold "rspec-core specs" run_spec_suite_for "rspec-core"
+  fold "rspec-expectations specs" run_spec_suite_for "rspec-expectations"
+  fold "rspec-mocks specs" run_spec_suite_for "rspec-mocks"
+  fold "rspec-rails specs" run_spec_suite_for "rspec-rails"
 
   if rspec_support_compatible; then
-    run_spec_suite_for "rspec-support"
+    fold "rspec-support specs" run_spec_suite_for "rspec-support"
   fi
 }
