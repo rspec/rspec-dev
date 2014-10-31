@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -x
+set -e
 source script/functions.sh
 
 if is_mri; then
