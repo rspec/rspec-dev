@@ -19,7 +19,7 @@ installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 
 [rbenv](https://github.com/sstephenson/rbenv) is also supported.
 
-Windows users can use [pik](https://github.com/vertiginous/pik).
+Windows users can use [uru](https://bitbucket.org/jonforums/uru).
 
 If you use a different Ruby version manager (or none at all), the important
 thing is that you have a sandboxed gem environment that does not require you to
