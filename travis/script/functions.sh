@@ -96,11 +96,12 @@ function check_documentation_coverage {
   bin/yard doc --no-cache | ruby -e "
     while line = gets
       has_warnings ||= line.start_with?('[warn]:')
+      has_errors   ||= line.start_with?('[error]:')
       puts line
     end
 
-    if has_warnings
-      puts \"\n\nYARD emitted documentation warnings.\"
+    if has_warnings || has_errors
+      puts \"\n\nYARD emitted documentation warnings or errors.\"
       exit(1)
     end
   "
