@@ -91,6 +91,19 @@ function check_documentation_coverage {
       exit(1)
     end
   "
+
+  # Some warnings only show up when generating docs, so do that as well.
+  bin/yard doc --no-cache | ruby -e "
+    while line = gets
+      has_warnings ||= line.start_with?('[warn]:')
+      puts line
+    end
+
+    if has_warnings
+      puts \"\n\nYARD emitted documentation warnings.\"
+      exit(1)
+    end
+  "
 }
 
 function check_style_and_lint {
