@@ -20,6 +20,18 @@ function is_mri_192 {
   fi
 }
 
+function is_mri_2plus {
+  if is_mri; then
+    if ruby -e "exit(RUBY_VERSION.to_f > 2.0)"; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
 function rspec_support_compatible {
   if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ] && [ "$MAINTENANCE_BRANCH" != "2-14-maintenance" ]; then
     return 0
@@ -30,7 +42,11 @@ function rspec_support_compatible {
 
 function documentation_enforced {
   if [ -x ./bin/yard ]; then
-    return 0
+    if is_mri_2plus; then
+      return 0
+    else
+      return 1
+    fi
   else
     return 1
   fi
