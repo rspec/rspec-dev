@@ -1,5 +1,6 @@
-source script/travis_functions.sh
-source script/predicate_functions.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/travis_functions.sh
+source $SCRIPT_DIR/predicate_functions.sh
 
 # idea taken from: http://blog.headius.com/2010/03/jruby-startup-time-tips.html
 export JRUBY_OPTS="${JRUBY_OPTS} -X-C" # disable JIT since these processes are so short lived
