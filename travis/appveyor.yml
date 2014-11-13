@@ -1,0 +1,22 @@
+version: "{build}"
+
+# Disable normal Windows builds in favor of our test script.
+build: off
+
+install:
+  - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - ruby --version
+  - gem --version
+  - gem install bundler
+  - bundler --version
+  - bundle install
+  - cinst ansicon
+
+test_script:
+  - bundle exec rspec
+
+environment:
+  matrix:
+    # ruby_version: '20' doesn't work for some reason
+    - ruby_version: '193'
+    - ruby_version: '21'
