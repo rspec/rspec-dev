@@ -1,5 +1,13 @@
 version: "{build}"
 
+# This will build all PRs targetting matching branches.
+# Without this, each PR builds twice -- once for the PR branch HEAD,
+# and once for the merge commit that github creates for each mergable PR.
+branches:
+  only:
+    - master
+    - /.*-maintenance$/
+
 # Disable normal Windows builds in favor of our test script.
 build: off
 
