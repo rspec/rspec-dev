@@ -1,5 +1,6 @@
 language: ruby
 sudo: false
+cache: bundler
 before_install:
   - "script/clone_all_rspec_repos"
   # Downgrade bundler to work around https://github.com/bundler/bundler/issues/3004
@@ -18,6 +19,7 @@ rvm:
   - 2.1.3
   - 2.1.4
   - 2.1.5
+  - 2.2
   - ruby-head
   - ree
   - jruby-18mode
@@ -32,4 +34,5 @@ matrix:
     - rvm: jruby-head
     - rvm: ruby-head
     - rvm: rbx
+    - rvm: 2.2
   fast_finish: true
