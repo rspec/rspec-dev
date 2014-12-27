@@ -34,5 +34,4 @@ matrix:
     - rvm: jruby-head
     - rvm: ruby-head
     - rvm: rbx
-    - rvm: 2.2
   fast_finish: true
