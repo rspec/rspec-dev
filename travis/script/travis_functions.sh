@@ -49,7 +49,8 @@ fold() {
     travis_time_start
   fi
 
-  "$@" || status=$?
+  "$@"
+  status=$?
 
   [ -z "$TRAVIS" ] || travis_time_finish
 
