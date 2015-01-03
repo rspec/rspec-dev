@@ -65,16 +65,7 @@ function run_spec_suite_for {
     echo "Running specs for $1"
     pushd ../$1
     unset BUNDLE_GEMFILE
-
-    if [ $1 == "rspec-rails" ]; then
-      bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
-    else
-      # The other repos' master branch have `./bundle` as the bundler path, but we need them to all
-      # go into `../bundle`, so we are forcing it here rather than reading from `.travis.yml`.
-      # Once all the PRs are merged we can revert this.
-      bundle_install_flags="--binstubs --standalone --without documentation --path ../bundle"
-    fi
-
+    bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
     travis_retry eval "bundle install $bundle_install_flags"
     run_specs_and_record_done
     popd
