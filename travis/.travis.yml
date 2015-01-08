@@ -31,7 +31,4 @@ matrix:
     - rvm: jruby-head
     - rvm: ruby-head
     - rvm: rbx
-    # These two are temporary until https://github.com/travis-ci/travis-ci/issues/3067 is solved.
-    - rvm: jruby-18mode
-    - rvm: jruby
   fast_finish: true
