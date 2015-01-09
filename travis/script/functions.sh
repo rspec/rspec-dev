@@ -55,9 +55,13 @@ function run_cukes {
 function run_specs_one_by_one {
   echo "Running each spec file, one-by-one..."
 
-  for file in `find spec -iname '*_spec.rb'`; do
-    bin/rspec $file -b --format progress
-  done
+  if is_mri; then
+    for file in `find spec -iname '*_spec.rb'`; do
+      bin/rspec $file -b --format progress
+    done
+  else
+    echo "Skipping one-by-one specs on non-MRI rubies as they tend to have long boot times"
+  fi
 }
 
 function run_spec_suite_for {

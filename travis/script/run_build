@@ -18,4 +18,8 @@ if style_and_lint_enforced; then
   fold "rubocop" check_style_and_lint
 fi
 
-run_all_spec_suites
+if is_jruby_20_mode; then
+  echo "Skipping other specs suites on JRuby 2.0 mode because it is so much slower"
+else
+  run_all_spec_suites
+fi

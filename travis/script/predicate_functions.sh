@@ -8,6 +8,18 @@ function is_mri {
   fi;
 }
 
+function is_jruby_20_mode {
+  if [ -z "$JRUBY_OPTS" ]; then
+    if ruby -e "exit(RUBY_VERSION == '2.0.0')"; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
 function is_mri_192 {
   if is_mri; then
     if ruby -e "exit(RUBY_VERSION == '1.9.2')"; then
