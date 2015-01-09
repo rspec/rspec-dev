@@ -66,7 +66,7 @@ function run_spec_suite_for {
     pushd ../$1
     unset BUNDLE_GEMFILE
     bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
-    travis_retry eval "bundle install $bundle_install_flags"
+    travis_retry eval "time bundle install $bundle_install_flags"
     run_specs_and_record_done
     popd
   fi;
