@@ -55,9 +55,13 @@ function run_cukes {
 function run_specs_one_by_one {
   echo "Running each spec file, one-by-one..."
 
-  for file in `find spec -iname '*_spec.rb'`; do
-    bin/rspec $file -b --format progress
-  done
+  if is_mri; then
+    for file in `find spec -iname '*_spec.rb'`; do
+      bin/rspec $file -b --format progress
+    done
+  else
+    echo "Skipping one-by-one specs on non-MRI rubies as they tend to have long boot times"
+  fi
 }
 
 function run_spec_suite_for {
@@ -66,7 +70,7 @@ function run_spec_suite_for {
     pushd ../$1
     unset BUNDLE_GEMFILE
     bundle_install_flags=`cat .travis.yml | grep bundler_args | tr -d '"' | grep -o " .*"`
-    travis_retry eval "bundle install $bundle_install_flags"
+    travis_retry eval "time bundle install $bundle_install_flags"
     run_specs_and_record_done
     popd
   fi;
@@ -118,7 +122,12 @@ function run_all_spec_suites {
   fold "rspec-core specs" run_spec_suite_for "rspec-core"
   fold "rspec-expectations specs" run_spec_suite_for "rspec-expectations"
   fold "rspec-mocks specs" run_spec_suite_for "rspec-mocks"
-  fold "rspec-rails specs" run_spec_suite_for "rspec-rails"
+
+  if is_mri; then
+    fold "rspec-rails specs" run_spec_suite_for "rspec-rails"
+  else
+    echo "Skipping rspec-rails specs on non-MRI rubies"
+  fi
 
   if rspec_support_compatible; then
     fold "rspec-support specs" run_spec_suite_for "rspec-support"
