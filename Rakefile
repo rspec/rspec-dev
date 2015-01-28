@@ -6,6 +6,7 @@ require 'time'
 require 'date'
 
 Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
+UnDocumentedProjects = %w[ rspec rspec-support ]
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
@@ -54,6 +55,17 @@ end
 desc "run an arbitrary command against all repos"
 task :run, :command do |t, args|
   run_command args[:command]
+end
+
+desc "Updates the rspec.github.io docs"
+task :update_docs, [:version, :branch, :website_path] do |t, args|
+  args.with_defaults(:website_path => "../rspec.github.io")
+  run_command "git checkout #{args[:branch]}", :except => UnDocumentedProjects
+  each_project :except => UnDocumentedProjects do |project|
+    cmd = "RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard --plugin rspec-docs-template --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+    puts cmd
+    Bundler.clean_system(cmd)
+  end
 end
 
 namespace :gem do
