@@ -19,15 +19,7 @@ installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 
 [rbenv](https://github.com/sstephenson/rbenv) is also supported.
 
-### Windows Instructions
-Windows users can use [uru](https://bitbucket.org/jonforums/uru) to manage Ruby versions.
-Fork the following projects: 
-	[rspec](https://github.com/rspec/rspec)
-	[rspec-core](https://github.com/rspec/rspec-core)
-	[rspec-expectations](https://github.com/rspec/rspec-expectations)
-	[rspec-mocks](https://github.com/rspec/rspec-mocks)
-	[rspec-rails](https://github.com/rspec/rspec-rails) 
-	[rspec-support](https://github.com/rspec/rspec-support)
+Windows users can use [uru](https://bitbucket.org/jonforums/uru).
 		
 If you use a different Ruby version manager (or none at all), the important
 thing is that you have a sandboxed gem environment that does not require you to
@@ -124,8 +116,9 @@ from the rspec-dev directory, or you'll see `LoadError`s.
 
 ## Errors in Windows setup
 
-If you get a SSL error in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.
-If you get this error "Gem::InstallError: The 'redcarpet' native gem requires installed build tools", download the development kit from [http://rubyinstaller.org/downloads]. You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
+If you get a SSL error in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.  
+
+If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [http://rubyinstaller.org/downloads]. You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
 ## different problem?
 
