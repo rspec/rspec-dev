@@ -20,7 +20,7 @@ installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 [rbenv](https://github.com/sstephenson/rbenv) is also supported.
 
 Windows users can use [uru](https://bitbucket.org/jonforums/uru).
-
+		
 If you use a different Ruby version manager (or none at all), the important
 thing is that you have a sandboxed gem environment that does not require you to
 use sudo to install gems, and has no rspec libraries installed.
@@ -113,6 +113,12 @@ Rspec adds ./lib and ./spec to the load path, so you have to run the `rspec`
 command from the root of the repository you're working on. i.e. if you're
 working on rspec-core, cd to the rspec-core directory. Don't try to run specs
 from the rspec-dev directory, or you'll see `LoadError`s.
+
+## Errors in Windows setup
+
+If you get a `SSL error` in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.  
+
+If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [http://rubyinstaller.org/downloads](http://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
 ## different problem?
 
