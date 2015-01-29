@@ -60,7 +60,7 @@ end
 desc "Updates the rspec.github.io docs"
 task :update_docs, [:version, :branch, :website_path] do |t, args|
   args.with_defaults(:website_path => "../rspec.github.io")
-  run_command "git checkout #{args[:branch]}"
+  run_command "git checkout #{args[:branch]} && git pull --rebase"
   each_project :except => UnDocumentedProjects do |project|
     cmd = "RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard --plugin rspec-docs-template --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     puts cmd
