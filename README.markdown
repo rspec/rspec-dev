@@ -114,6 +114,12 @@ command from the root of the repository you're working on. i.e. if you're
 working on rspec-core, cd to the rspec-core directory. Don't try to run specs
 from the rspec-dev directory, or you'll see `LoadError`s.
 
+## Errors in Windows setup
+
+If you get a `SSL error` in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.  
+
+If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [http://rubyinstaller.org/downloads](http://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
+
 ## different problem?
 
 If you run into a problem not documented here, please check the rspec-dev
