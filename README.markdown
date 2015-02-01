@@ -19,7 +19,13 @@ installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 
 [rbenv](https://github.com/sstephenson/rbenv) is also supported.
 
-Windows users can use [uru](https://bitbucket.org/jonforums/uru).
+Windows users are recommended to use
+[RubyInstaller](http://rubyinstaller.org/downloads/) to install Ruby versions
+and [uru](https://bitbucket.org/jonforums/uru) to manage them.
+
+Windows users will also need to install the
+[RubyInstaller Development Kit](http://rubyinstaller.org/downloads/)
+(aka DevKit) to enable Bundler to build and install native gems.
 
 If you use a different Ruby version manager (or none at all), the important
 thing is that you have a sandboxed gem environment that does not require you to
@@ -38,9 +44,9 @@ bootstrapped:
 
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
-    bundle install --binstubs
-    bin/rake setup
-    bin/rake # runs tests in every repository
+    bundle install --path=vendor/bundle
+    bundle exec rake setup
+    bundle exec rake # runs tests in every repository
 
 If all goes well, you'll end up seeing a lot of passing cucumber features
 and rspec code examples. You'll also have a directory structure that looks
@@ -60,7 +66,7 @@ like this:
 After the initial clone you can run `rake git:pull` from the rspec-dev
 directory to update all of the rspec repos (in repos).
 
-Run `rake -T` to see the available tasks for dev mode.
+Run `bundle exec rake -T` to see the available tasks for dev mode.
 
 # Contributing
 
