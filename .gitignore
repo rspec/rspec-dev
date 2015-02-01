@@ -16,3 +16,5 @@ repos/*
 bundle
 
 config/github_oauth_token.txt
+/.idea/
+/vendor/
