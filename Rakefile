@@ -207,9 +207,9 @@ BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'master'
 
 def create_pull_request(project_name, branch, base=BASE_BRANCH)
   github_client.create_pull_request(
-      "rspec/#{project_name}", base, branch,
-      "Updates from rspec-dev (#{Date.today.iso8601})",
-      "These are some updates, generated from rspec-dev's rake tasks."
+    "rspec/#{project_name}", base, branch,
+    "Updates from rspec-dev (#{Date.today.iso8601})",
+    "These are some updates, generated from rspec-dev's rake tasks."
   )
 end
 
@@ -239,9 +239,9 @@ namespace :travis do
       lines = file.each_line.each_with_object([]) do |line, all|
         if !comments_added && !line.start_with?('#!')
           all.concat([
-                         "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
-                         "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
-                     ])
+            "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
+          ])
           comments_added = true
         end
 
@@ -249,9 +249,9 @@ namespace :travis do
       end
 
       ReadFile.new(
-          file.relative_path_from(travis_root),
-          lines.join,
-          file.stat.mode
+        file.relative_path_from(travis_root),
+        lines.join,
+        file.stat.mode
       )
     end
   end
@@ -265,12 +265,12 @@ namespace :travis do
 
     puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
     case STDIN.gets.downcase
-      when /^y/
-        `git branch -D #{name}`
-      when /^r(?:ename)? (.*)$/
-        name = $1
-      else
-        abort "Unknown option: #{input}"
+    when /^y/
+      `git branch -D #{name}`
+    when /^r(?:ename)? (.*)$/
+      name = $1
+    else
+      abort "Unknown option: #{input}"
     end
 
     name
@@ -462,13 +462,13 @@ class VersionStats
       end
 
       authors = logs.split("\n").
-          map{|l| l.sub(/Author: /,'')}.
-          map{|l| l.split('<').first}.
-          map{|l| l.split(' and ')}.flatten.
-          map{|l| l.split('+')}.flatten.
-          map{|l| l.split(',')}.flatten.
-          map{|l| l.strip}.
-          uniq.compact.reject{|n| n == ""}.sort
+        map{|l| l.sub(/Author: /,'')}.
+        map{|l| l.split('<').first}.
+        map{|l| l.split(' and ')}.flatten.
+        map{|l| l.split('+')}.flatten.
+        map{|l| l.split(',')}.flatten.
+        map{|l| l.strip}.
+        uniq.compact.reject{|n| n == ""}.sort
     end
   end
 
@@ -485,7 +485,7 @@ class VersionStats
     @merged_pull_requests ||= count_commits('grep -v Revert | grep "Merge pull request" |')
   end
 
-  private
+private
 
   def count_commits(command_before_count)
     @dirs.reduce(0) do |count_1, dir|
