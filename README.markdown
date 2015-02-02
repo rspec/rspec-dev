@@ -44,7 +44,7 @@ bootstrapped:
 
     git clone git://github.com/rspec/rspec-dev.git
     cd rspec-dev
-    bundle install --path=vendor/bundle
+    bundle install --binstubs
     bundle exec rake setup
     bundle exec rake # runs tests in every repository
 
