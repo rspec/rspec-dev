@@ -359,7 +359,7 @@ end
 desc "generate release notes from changelogs"
 task :release_notes, :target do |_, args|
   target = args[:target] || 'blog'
-  ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails'].each do |project|
+  ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support'].each do |project|
     lines = []
     Dir.chdir("repos/#{project}") do
       log = File.readlines("Changelog.md").map(&:chomp)
