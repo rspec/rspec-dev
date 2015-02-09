@@ -3,9 +3,8 @@ source $SCRIPT_DIR/travis_functions.sh
 source $SCRIPT_DIR/predicate_functions.sh
 
 # If JRUBY_OPTS isn't set, use these.
+# see http://docs.travis-ci.com/user/ci-environment/
 export JRUBY_OPTS=${JRUBY_OPTS:-"--server -Xcompile.invokedynamic=false"}
-# idea taken from: http://blog.headius.com/2010/03/jruby-startup-time-tips.html
-export JRUBY_OPTS="${JRUBY_OPTS} -X-C" # disable JIT since these processes are so short lived
 SPECS_HAVE_RUN_FILE=specs.out
 MAINTENANCE_BRANCH=`cat maintenance-branch`
 
