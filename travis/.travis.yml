@@ -19,16 +19,20 @@ rvm:
   - 2.2
   - ruby-head
   - ree
-  - jruby-18mode
-  - jruby
-  - jruby-head
   - rbx
 matrix:
   include:
     - rvm: jruby
-      env: JRUBY_OPTS='--2.0'
+      env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false -Xcompat.version=2.0'
+    - rvm: jruby-head
+      env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false'
+    - rvm: jruby-18mode
+      env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false'
+    - rvm: jruby
+      env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false'
   allow_failures:
     - rvm: jruby-head
+      env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false'
     - rvm: ruby-head
     - rvm: rbx
   fast_finish: true
