@@ -8,6 +8,10 @@ export JRUBY_OPTS=${JRUBY_OPTS:-"--server -Xcompile.invokedynamic=false"}
 SPECS_HAVE_RUN_FILE=specs.out
 MAINTENANCE_BRANCH=`cat maintenance-branch`
 
+# Don't allow rubygems to pollute what's loaded. Also, things boot
+# faster without the extra load time of rubygems.
+export RUBYOPT="--disable=gem"
+
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
     travis_retry eval "git clone git://github.com/rspec/$1 --depth 1 --branch $MAINTENANCE_BRANCH"
@@ -46,7 +50,7 @@ function run_cukes {
     else
       # Prepare RUBYOPT for scenarios that are shelling out to ruby,
       # and PATH for those that are using `rspec` or `rake`.
-      RUBYOPT="-I${PWD}/../bundle -rbundler/setup" \
+      RUBYOPT="${RUBYOPT} -I${PWD}/../bundle -rbundler/setup" \
          PATH="${PWD}/bin:$PATH" \
          bin/cucumber --strict
     fi
