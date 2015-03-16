@@ -22,7 +22,7 @@ install:
   - cinst ansicon
 
 test_script:
-  - bundle exec rspec
+  - bundle exec rspec --backtrace
 
 environment:
   matrix:
