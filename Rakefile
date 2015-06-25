@@ -284,6 +284,56 @@ namespace :travis do
   end
 end
 
+namespace :code_of_conduct do
+  def update_conduct_files_in_repos
+    update_files_in_repos('code of conduct') do |name|
+      conduct_files_with_comments.each do |file|
+        full_file_name = ReposPath.join(name, file.file_name)
+        full_file_name.write(file.contents)
+        full_file_name.chmod(file.mode) # ensure executables are set
+      end
+    end
+  end
+
+  def conduct_files_with_comments
+    conduct_root = BaseRspecPath.join('code_of_conduct')
+    file_names = Pathname.glob(conduct_root.join('**', '{*,.*}')).select do |f|
+      f.file?
+    end
+
+    file_names.map do |file|
+      comments_added = false
+      lines = file.each_line.each_with_object([]) do |line, all|
+        if !comments_added && !line.start_with?('#!')
+          all.concat([
+            "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
+          ])
+          comments_added = true
+        end
+
+        all << line
+      end
+
+      ReadFile.new(
+        file.relative_path_from(conduct_root),
+        lines.join,
+        file.stat.mode
+      )
+    end
+  end
+
+  desc "Update code of conduct files"
+  task :update_files do
+    update_conduct_files_in_repos
+  end
+
+  desc "Updates the code of conduct files and creates a PR"
+  task :create_pr_with_updates do
+    force_update update_conduct_files_in_repos
+  end
+end
+
 task :setup => ["git:clone", "bundle:install"]
 
 task :default do
