@@ -284,10 +284,10 @@ namespace :travis do
   end
 end
 
-namespace :code_of_conduct do
-  def update_conduct_files_in_repos
-    update_files_in_repos('code of conduct') do |name|
-      conduct_files_with_comments.each do |file|
+namespace :common_markdown_files do
+  def update_common_markdown_files_in_repos
+    update_files_in_repos('common markdown files') do |name|
+      common_markdown_files_with_comments.each do |file|
         full_file_name = ReposPath.join(name, file.file_name)
         full_file_name.write(file.contents)
         full_file_name.chmod(file.mode) # ensure executables are set
@@ -295,9 +295,9 @@ namespace :code_of_conduct do
     end
   end
 
-  def conduct_files_with_comments
-    conduct_root = BaseRspecPath.join('code_of_conduct')
-    file_names = Pathname.glob(conduct_root.join('**', '{*,.*}')).select do |f|
+  def common_markdown_files_with_comments
+    markdown_root = BaseRspecPath.join('common_markdown_files')
+    file_names = Pathname.glob(markdown_root.join('**', '{*,.*}')).select do |f|
       f.file?
     end
 
@@ -318,21 +318,21 @@ namespace :code_of_conduct do
       end
 
       ReadFile.new(
-        file.relative_path_from(conduct_root),
+        file.relative_path_from(markdown_root),
         lines.join,
         file.stat.mode
       )
     end
   end
 
-  desc "Update code of conduct files"
+  desc "Update common markdown files"
   task :update_files do
-    update_conduct_files_in_repos
+    update_common_markdown_files_in_repos
   end
 
-  desc "Updates the code of conduct files and creates a PR"
+  desc "Updates the common markdown files files and creates a PR"
   task :create_pr_with_updates do
-    force_update update_conduct_files_in_repos
+    force_update update_common_markdown_files_in_repos
   end
 end
 
