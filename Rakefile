@@ -216,16 +216,18 @@ end
 namespace :travis do
   ReadFile = Struct.new(:file_name, :contents, :mode)
 
-  def assert_clean_git_status(name)
-    unless `git status` =~ /nothing to commit,? \(?working directory clean\)?/
-      abort "#{name} has uncommitted changes"
-    end
-  end
+  def update_travis_files_in_repos
+    update_files_in_repos('travis build scripts') do |name|
+      around_update_travis_build do
+        travis_files_with_comments.each do |file|
+          full_file_name = ReposPath.join(name, file.file_name)
+          full_file_name.write(file.contents)
+          full_file_name.chmod(file.mode) # ensure executables are set
+        end
 
-  def each_project_with_common_travis_build(&b)
-    except = %w[ rspec ]
-    except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
-    each_project(:except => except, &b)
+        update_maintenance_branch
+      end
+    end
   end
 
   def travis_files_with_comments
@@ -260,22 +262,6 @@ namespace :travis do
     File.write("./maintenance-branch", BASE_BRANCH) unless File.exist?('./maintenance-branch')
   end
 
-  def confirm_branch_name(name)
-    return name unless system("git show-branch #{name} > /dev/null 2>&1")
-
-    puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
-    case STDIN.gets.downcase
-    when /^y/
-      `git branch -D #{name}`
-    when /^r(?:ename)? (.*)$/
-      name = $1
-    else
-      abort "Unknown option: #{input}"
-    end
-
-    name
-  end
-
   def run_if_exists(script_file)
     sh script_file if File.exist?(script_file)
   end
@@ -287,39 +273,6 @@ namespace :travis do
     run_if_exists './script/after_update_travis_build.sh'
   end
 
-  def update_travis_files_in_repos
-    branch_name = "update-travis-build-scripts-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
-
-    each_project_with_common_travis_build do |proj|
-      assert_clean_git_status(proj)
-    end
-
-    each_project_with_common_travis_build do |name|
-      sh "git checkout #{BASE_BRANCH}"
-      sh "git pull --rebase"
-    end
-
-    each_project_with_common_travis_build do |name|
-      branch_name = confirm_branch_name(branch_name)
-      sh "git checkout -b #{branch_name}"
-
-      around_update_travis_build do
-        travis_files_with_comments.each do |file|
-          full_file_name = ReposPath.join(name, file.file_name)
-          full_file_name.write(file.contents)
-          full_file_name.chmod(file.mode) # ensure executables are set
-        end
-
-        update_maintenance_branch
-      end
-
-      sh "git add ."
-      sh "git commit -m 'Updated travis build scripts (from rspec-dev)'"
-    end
-
-    branch_name
-  end
-
   desc "Update travis build files"
   task :update_files do
     update_travis_files_in_repos
@@ -327,20 +280,59 @@ namespace :travis do
 
   desc "Updates the travis files and creates a PR"
   task :create_pr_with_updates do
-    branch = update_travis_files_in_repos
+    force_update update_travis_files_in_repos
+  end
+end
 
-    each_project_with_common_travis_build do |name|
-      unless system("git push origin #{branch}")
-        puts "Push failed, force? (y/n)"
-        if STDIN.gets.downcase =~ /^y/
-          sh "git push origin +#{branch}"
-        end
-        create_pull_request(name, branch) rescue nil
-      else
-        create_pull_request(name, branch)
+namespace :common_markdown_files do
+  def update_common_markdown_files_in_repos
+    update_files_in_repos('common markdown files', ' [ci skip]') do |name|
+      common_markdown_files_with_comments.each do |file|
+        full_file_name = ReposPath.join(name, file.file_name)
+        full_file_name.write(file.contents)
+        full_file_name.chmod(file.mode) # ensure executables are set
       end
-      sh "git checkout #{BASE_BRANCH} && git branch -D #{branch}" # no need to keep it around
     end
+  end
+
+  def common_markdown_files_with_comments
+    markdown_root = BaseRspecPath.join('common_markdown_files')
+    file_names = Pathname.glob(markdown_root.join('**', '{*,.*}')).select do |f|
+      f.file?
+    end
+
+    file_names.map do |file|
+      comments_added = false
+      lines = file.each_line.each_with_object([]) do |line, all|
+        if !comments_added && !line.start_with?('#!')
+          all.concat([
+            "<!---\n",
+            "This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "DO NOT modify it by hand as your changes will get lost the next time it is generated.\n",
+            "-->\n\n",
+          ])
+          comments_added = true
+        end
+
+        all << line
+      end
+
+      ReadFile.new(
+        file.relative_path_from(markdown_root),
+        lines.join,
+        file.stat.mode
+      )
+    end
+  end
+
+  desc "Update common markdown files"
+  task :update_files do
+    update_common_markdown_files_in_repos
+  end
+
+  desc "Updates the common markdown files files and creates a PR"
+  task :create_pr_with_updates do
+    force_update update_common_markdown_files_in_repos
   end
 end
 
@@ -437,6 +429,74 @@ task :version_stats, :commit_ranges do |t, args|
   end
 end
 
+def assert_clean_git_status(name)
+  unless `git status` =~ /nothing to commit,? \(?working directory clean\)?/
+    abort "#{name} has uncommitted changes"
+  end
+end
+
+def confirm_branch_name(name)
+  return name unless system("git show-branch #{name} > /dev/null 2>&1")
+
+  puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
+  case STDIN.gets.downcase
+  when /^y/
+    `git branch -D #{name}`
+  when /^r(?:ename)? (.*)$/
+    name = $1
+  else
+    abort "Unknown option: #{input}"
+  end
+
+  name
+end
+
+def each_project_with_common_build(&b)
+  except = %w[ rspec ]
+  except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
+  each_project(:except => except, &b)
+end
+
+def force_update(branch)
+  each_project_with_common_build do |name|
+    unless system("git push origin #{branch}")
+      puts "Push failed, force? (y/n)"
+      if STDIN.gets.downcase =~ /^y/
+        sh "git push origin +#{branch}"
+      end
+      create_pull_request(name, branch) rescue nil
+    else
+      create_pull_request(name, branch)
+    end
+    sh "git checkout #{BASE_BRANCH} && git branch -D #{branch}" # no need to keep it around
+  end
+end
+
+def update_files_in_repos(purpose, suffix='')
+  branch_name = "update-#{purpose.gsub ' ', '-'}-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
+
+  each_project_with_common_build do |proj|
+    assert_clean_git_status(proj)
+  end
+
+  each_project_with_common_build do |name|
+    sh "git checkout #{BASE_BRANCH}"
+    sh "git pull --rebase"
+  end
+
+  each_project_with_common_build do |name|
+    branch_name = confirm_branch_name(branch_name)
+    sh "git checkout -b #{branch_name}"
+
+    yield name
+
+    sh "git add ."
+    sh "git commit -m 'Updated #{purpose} (from rspec-dev)#{suffix}'"
+  end
+
+  branch_name
+end
+
 class VersionStats
   attr_reader :commit_ranges, :dirs
 
@@ -461,7 +521,7 @@ class VersionStats
         end
       end
 
-      authors = logs.split("\n").
+      logs.split("\n").
         map{|l| l.sub(/Author: /,'')}.
         map{|l| l.split('<').first}.
         map{|l| l.split(' and ')}.flatten.
