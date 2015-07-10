@@ -286,7 +286,7 @@ end
 
 namespace :common_markdown_files do
   def update_common_markdown_files_in_repos
-    update_files_in_repos('common markdown files') do |name|
+    update_files_in_repos('common markdown files', ' [ci skip]') do |name|
       common_markdown_files_with_comments.each do |file|
         full_file_name = ReposPath.join(name, file.file_name)
         full_file_name.write(file.contents)
@@ -472,7 +472,7 @@ def force_update(branch)
   end
 end
 
-def update_files_in_repos(purpose)
+def update_files_in_repos(purpose, suffix='')
   branch_name = "update-#{purpose.gsub ' ', '-'}-#{Date.today.iso8601}-for-#{BASE_BRANCH}"
 
   each_project_with_common_build do |proj|
@@ -491,7 +491,7 @@ def update_files_in_repos(purpose)
     yield name
 
     sh "git add ."
-    sh "git commit -m 'Updated #{purpose} (from rspec-dev)'"
+    sh "git commit -m 'Updated #{purpose} (from rspec-dev)#{suffix}'"
   end
 
   branch_name
