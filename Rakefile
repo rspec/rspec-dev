@@ -519,7 +519,7 @@ class VersionStats
         end
       end
 
-      authors = logs.split("\n").
+      logs.split("\n").
         map{|l| l.sub(/Author: /,'')}.
         map{|l| l.split('<').first}.
         map{|l| l.split(' and ')}.flatten.
