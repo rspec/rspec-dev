@@ -4,6 +4,7 @@ require 'pathname'
 require 'bundler'
 require 'time'
 require 'date'
+require 'erb'
 
 Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
 UnDocumentedProjects = %w[ rspec rspec-support ]
@@ -287,7 +288,7 @@ end
 namespace :common_markdown_files do
   def update_common_markdown_files_in_repos
     update_files_in_repos('common markdown files', ' [ci skip]') do |name|
-      common_markdown_files_with_comments.each do |file|
+      common_markdown_files_with_comments(name).each do |file|
         full_file_name = ReposPath.join(name, file.file_name)
         full_file_name.write(file.contents)
         full_file_name.chmod(file.mode) # ensure executables are set
@@ -295,7 +296,7 @@ namespace :common_markdown_files do
     end
   end
 
-  def common_markdown_files_with_comments
+  def common_markdown_files_with_comments(project_name)
     markdown_root = BaseRspecPath.join('common_markdown_files')
     file_names = Pathname.glob(markdown_root.join('**', '{*,.*}')).select do |f|
       f.file?
@@ -303,7 +304,9 @@ namespace :common_markdown_files do
 
     file_names.map do |file|
       comments_added = false
-      lines = file.each_line.each_with_object([]) do |line, all|
+      content = markdown_file_content(file, project_name)
+
+      lines = content.each_line.each_with_object([]) do |line, all|
         if !comments_added && !line.start_with?('#!')
           all.concat([
             "<!---\n",
@@ -318,11 +321,24 @@ namespace :common_markdown_files do
       end
 
       ReadFile.new(
-        file.relative_path_from(markdown_root),
+        file.relative_path_from(markdown_root).sub(/\.erb$/, ''),
         lines.join,
         file.stat.mode
       )
     end
+  end
+
+  ERBRenderer = Struct.new(:project_name, :contents) do
+    def render
+      # Our `binding` makes `project_name` available to the ERB template.
+      ERB.new(contents).result(binding)
+    end
+  end
+
+  def markdown_file_content(file, project_name)
+    raw_contents = file.read
+    return raw_contents unless file.extname == ".erb"
+    ERBRenderer.new(project_name, raw_contents).render
   end
 
   desc "Update common markdown files"
