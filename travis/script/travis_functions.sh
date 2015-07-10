@@ -47,6 +47,8 @@ fold() {
   if [ -n "$TRAVIS" ]; then
     printf "travis_fold:start:%s\r\e[0m" "$name"
     travis_time_start
+  else
+    echo "============= Starting $name ==============="
   fi
 
   "$@"
@@ -57,6 +59,8 @@ fold() {
   if [ "$status" -eq 0 ]; then
     if [ -n "$TRAVIS" ]; then
       printf "travis_fold:end:%s\r\e[0m" "$name"
+    else
+      echo "============= Ending $name ==============="
     fi
   else
     STATUS="$status"
