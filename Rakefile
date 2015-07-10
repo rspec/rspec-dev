@@ -306,8 +306,10 @@ namespace :code_of_conduct do
       lines = file.each_line.each_with_object([]) do |line, all|
         if !comments_added && !line.start_with?('#!')
           all.concat([
-            "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
-            "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n",
+            "<!---\n",
+            "This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+            "DO NOT modify it by hand as your changes will get lost the next time it is generated.\n",
+            "-->\n\n",
           ])
           comments_added = true
         end
