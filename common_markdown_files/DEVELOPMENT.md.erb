@@ -57,7 +57,7 @@ individually.
 
 ## Gotcha: Version mismatch from sibling repos
 
-The [../Gemfile] is designed to be flexible and support using
+The [Gemfile](../Gemfile) is designed to be flexible and support using
 the other RSpec repositories either from a local sibling directory
 (e.g. `../rspec-<subproject>`) or, if there is no such directory,
 directly from git. This generally does the "right thing", but can
@@ -126,7 +126,7 @@ Let's break this down into the individual steps.
 
 ## Specs
 
-RSpec dogfoods itself. It's primary defense against regressions is its spec suite. Run with:
+RSpec dogfoods itself. Its primary defense against regressions is its spec suite. Run with:
 
 ```
 $ bundle exec rspec
@@ -156,7 +156,14 @@ project-specific threshold, the build will fail.
 
 ## Cukes
 
-RSpec uses [cucumber](https://cucumber.io/) for both acceptance testing and [documentation](https://relishapp.com/rspec). Run with:
+RSpec uses [cucumber](https://cucumber.io/) for both acceptance testing
+and [documentation](https://relishapp.com/rspec). Since we publish our cukes
+as documentation, please limit new cucumber scenarios to user-facing examples
+that help demonstrate usage. Any tests that exist purely to prevent regressions
+should be written as specs, even if they are written in an acceptance style.
+Duplication between our YARD API docs and the cucumber documentation is fine.
+
+Run with:
 
 ```
 $ bundle exec cucumber
