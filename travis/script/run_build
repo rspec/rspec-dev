@@ -7,6 +7,8 @@ if [ -f script/custom_build_functions.sh ]; then
   source script/custom_build_functions.sh
 fi
 
+fold "binstub check" check_binstubs
+
 fold "specs" run_specs_and_record_done
 fold "cukes" run_cukes
 
