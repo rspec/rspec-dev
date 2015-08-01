@@ -102,10 +102,12 @@ function check_binstubs {
     success=1
   fi
 
-  if [ ! -x ./bin/cucumber ]; then
-    binstubs="$binstubs bin/cucumber"
-    gems="$gems cucumber"
-    success=1
+  if [ -d features ]; then
+    if [ ! -x ./bin/cucumber ]; then
+      binstubs="$binstubs bin/cucumber"
+      gems="$gems cucumber"
+      success=1
+    fi
   fi
 
   if [ $success -eq 1 ]; then
