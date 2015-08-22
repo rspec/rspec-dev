@@ -8,9 +8,31 @@ function is_mri {
   fi;
 }
 
+function is_jruby {
+  if ruby -e "exit(defined?(RUBY_PLATFORM) && RUBY_PLATFORM == 'java')"; then
+    # RUBY_ENGINE only returns 'ruby' on MRI.
+    # MRI 1.8.7 lacks the constant but all other rubies have it (including JRuby in 1.8 mode)
+    return 0
+  else
+    return 1
+  fi;
+}
+
 function is_mri_192 {
   if is_mri; then
     if ruby -e "exit(RUBY_VERSION == '1.9.2')"; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
+function is_mri_192_plus {
+  if is_mri; then
+    if ruby -e "exit(RUBY_VERSION.to_f > 1.8)"; then
       return 0
     else
       return 1
