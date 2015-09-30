@@ -133,8 +133,8 @@ by submitting a patch to this README.
 
 # Also see
 
-* [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
-* [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
-* [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
-* [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
-* [http://github.com/rspec/rspec-rails](http://github.com/rspec/rspec-rails)
+* [https://github.com/rspec/rspec](https://github.com/rspec/rspec)
+* [https://github.com/rspec/rspec-core](https://github.com/rspec/rspec-core)
+* [https://github.com/rspec/rspec-expectations](https://github.com/rspec/rspec-expectations)
+* [https://github.com/rspec/rspec-mocks](https://github.com/rspec/rspec-mocks)
+* [https://github.com/rspec/rspec-rails](https://github.com/rspec/rspec-rails)
