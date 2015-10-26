@@ -136,6 +136,7 @@ Style/EmptyLinesAroundAccessModifier:
 Style/GlobalVars:
   Exclude:
     - spec/**/*
+    - benchmarks/**/*
 
 # Allow use of: expect { ... }.to raise_error(e) { ... }
 Style/MultilineBlockChain:
