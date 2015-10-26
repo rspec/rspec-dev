@@ -118,6 +118,9 @@ StringLiterals:
 Style/SpecialGlobalVars:
   Enabled: false
 
+Style/MultilineTernaryOperator:
+  Enabled: false
+
 Style/TrailingComma:
   Enabled: false
 
