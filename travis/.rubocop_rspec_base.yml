@@ -160,6 +160,10 @@ Style/SingleLineMethods:
 Style/RescueModifier:
   Enabled: false
 
+# We name block parameters what we want
+Style/SingleLineBlockParams:
+  Enabled: false
+
 # RSpec uses {:a => 1} rather than { :a => 1 }
 Style/SpaceInsideHashLiteralBraces:
   Enabled: false
