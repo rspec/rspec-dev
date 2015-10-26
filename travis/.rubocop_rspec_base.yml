@@ -114,6 +114,56 @@ SpaceAroundEqualsInParameterDefault:
 StringLiterals:
   Enabled: false
 
+# RSpec examples use expect { ... } rather than expect do ... end
+Style/Blocks:
+  Exclude:
+    - spec/**/*
+
+# In tests, it is convenient to define a test class like RSpec::Something on a single line
+Style/ClassAndModuleChildren:
+  Exclude:
+    - spec/**/*
+
+# Our tests use compact class definitions to save "real estate" on the screen.
+Style/EmptyLineBetweenDefs:
+  Exclude:
+    - spec/**/*
+
+Style/EmptyLinesAroundAccessModifier:
+  Exclude:
+    - spec/**/*
+
+Style/GlobalVars:
+  Exclude:
+    - spec/**/*
+
+# Allow use of: expect { ... }.to raise_error(e) { ... }
+Style/MultilineBlockChain:
+  Exclude:
+    - spec/**/*
+
+# Allow use of: something rescue nil
+Style/RescueModifier:
+  Exclude:
+    - spec/**/*
+
+# Our tests use single-line methods in numerous places. This saves "real estate" on the screen.
+Style/Semicolon:
+  Exclude:
+    - spec/**/*
+
+Style/SingleLineMethods:
+  Exclude:
+    - spec/**/*
+
+# Allow use of 'something rescue nil' in specs only
+Style/RescueModifier:
+  Enabled: false
+
+# RSpec uses {:a => 1} rather than { :a => 1 }
+Style/SpaceInsideHashLiteralBraces:
+  Enabled: false
+
 # This rule favors constant names from the English standard library which we don't load.
 Style/SpecialGlobalVars:
   Enabled: false
