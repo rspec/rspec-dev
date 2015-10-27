@@ -156,7 +156,7 @@ Style/BlockComments:
     - benchmarks/**/*
 
 # RSpec examples use expect { ... } rather than expect do ... end
-Style/Blocks:
+Style/BlockDelimiters:
   Exclude:
     - spec/**/*
 
