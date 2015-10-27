@@ -114,6 +114,47 @@ SpaceAroundEqualsInParameterDefault:
 StringLiterals:
   Enabled: false
 
+# This is problematic for Cucumber
+Lint/AmbiguousRegexpLiteral:
+  Exclude:
+    - features/**/*
+
+# In this context, eval is not a "security risk"
+Lint/Eval:
+  Enabled: false
+
+Lint/HandleExceptions:
+  Exclude:
+    - spec/**/*
+
+# RSpec does lots of crazy metaprogramming
+# Defining methods in methods is what we do
+Lint/NestedMethodDefinition:
+  Enabled: false
+
+Lint/RescueException:
+  Exclude:
+    - spec/**/*
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Style/AlignParameters:
+  Enabled: false
+
+Style/BlockComments:
+  Exclude:
+    - benchmarks/**/*
+
 # RSpec examples use expect { ... } rather than expect do ... end
 Style/Blocks:
   Exclude:
@@ -124,6 +165,10 @@ Style/ClassAndModuleChildren:
   Exclude:
     - spec/**/*
 
+# We sometimes use #kind_of? rather than #is_a?
+Style/ClassCheck:
+  Enabled: false
+
 # Our tests use compact class definitions to save "real estate" on the screen.
 Style/EmptyLineBetweenDefs:
   Exclude:
@@ -133,15 +178,30 @@ Style/EmptyLinesAroundAccessModifier:
   Exclude:
     - spec/**/*
 
+Style/ExtraSpacing:
+  Enabled: false
+
+Style/FirstParameterIndentation:
+  Enabled: false
+
 Style/GlobalVars:
   Exclude:
     - spec/**/*
     - benchmarks/**/*
 
+Style/GuardClause:
+  Enabled: false
+
 # Allow use of: expect { ... }.to raise_error(e) { ... }
 Style/MultilineBlockChain:
   Exclude:
     - spec/**/*
+
+Style/MultilineOperationIndentation:
+  Enabled: false
+
+Style/ParallelAssignment:
+  Enabled: false
 
 # Allow use of: something rescue nil
 Style/RescueModifier:
@@ -152,10 +212,25 @@ Style/RescueModifier:
 Style/Semicolon:
   Exclude:
     - spec/**/*
+    - benchmarks/**/*
 
 Style/SingleLineMethods:
   Exclude:
     - spec/**/*
+
+Style/SingleSpaceBeforeFirstArg:
+  Enabled: false
+
+Style/SpaceAroundOperators:
+  Enabled: false
+
+# Allow 'class Something < Struct.new(:a, :b)'
+Style/StructInheritance:
+  Enabled: false
+
+# Allow 'obj.method { |o| o.something }' rather than 'obj.method(&:something)'
+Style/SymbolProc:
+  Enabled: false
 
 # Allow use of 'something rescue nil' in specs only
 Style/RescueModifier:
