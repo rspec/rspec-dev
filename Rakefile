@@ -63,9 +63,11 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   args.with_defaults(:website_path => "../rspec.github.io")
   run_command "git checkout #{args[:branch]} && git pull --rebase"
   each_project :except => UnDocumentedProjects do |project|
-    cmd = "RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard --plugin rspec-docs-template --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+    cmd = "bundle install && RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard --plugin rspec-docs-template --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     puts cmd
     Bundler.clean_system(cmd)
+    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed -ibak 's/href="\\\(..\\\/\\\)*css/href="\\\/stylesheets\\\/docs/' {}; popd}
+    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed -ibak 's/src="\\\(..\\\/\\\)*js/src="\\\/javascripts\\\/docs/' {}; popd}
   end
 end
 
