@@ -54,7 +54,7 @@ like this:
         rspec-rails        # rspec 2 for rails 3
           tmp
             aruba          # gets generated when running rspec-rails' cukes
-            example_app    # gets generated when running rspec-rails' specs 
+            example_app    # gets generated when running rspec-rails' specs
         rspec              # meta-gem that depends on core, expectations, and mocks
 
 After the initial clone you can run `rake git:pull` from the rspec-dev
@@ -70,6 +70,11 @@ specs and cucumber features, and make patches.
 
 NOTE: You do not need to use rspec-dev to work on a specific RSpec repo. You
 can treat each RSpec repo as an independent project.
+
+- [Build details](BUILD_DETAIL.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Detailed contributing guide](CONTRIBUTING.md)
+- [Development setup guide](DEVELOPMENT.md)
 
 ## Patches
 
@@ -116,7 +121,7 @@ from the rspec-dev directory, or you'll see `LoadError`s.
 
 ## Errors in Windows setup
 
-If you get a `SSL error` in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.  
+If you get a `SSL error` in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.
 
 If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [http://rubyinstaller.org/downloads](http://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
