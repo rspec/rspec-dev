@@ -30,6 +30,18 @@ function is_mri_192 {
   fi
 }
 
+function is_mri_192_plus {
+  if is_mri; then
+    if ruby -e "exit(RUBY_VERSION.to_f > 1.8)"; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
 function is_mri_2plus {
   if is_mri; then
     if ruby -e "exit(RUBY_VERSION.to_f > 2.0)"; then
