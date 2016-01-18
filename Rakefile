@@ -428,7 +428,7 @@ end
 
 task :rdoc => ["doc:clobber", "doc:generate"]
 
-desc "Lists stas generated from the logs for the provided commit ranges"
+desc "Lists stats generated from the logs for the provided commit ranges"
 task :version_stats, :commit_ranges do |t, args|
   projects = Projects - ["rspec"]
 
