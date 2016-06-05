@@ -1,5 +1,6 @@
 language: ruby
 sudo: false
+email: false
 cache:
   directories:
     - ../bundle
