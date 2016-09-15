@@ -15,7 +15,7 @@ rspec-rails.
 The safest bet is to use [rvm](https://github.com/wayneeseguin/rvm) with an rvm
 installed ruby (not system ruby) and a clean gemset dedicated to rspec-dev:
 
-    rvm 1.9.3@rspec-dev --create # or whatever version of Ruby you prefer
+    rvm 2.3.1@rspec-dev --create # or whatever version of Ruby you prefer
 
 [rbenv](https://github.com/sstephenson/rbenv) is also supported.
 
