@@ -454,7 +454,7 @@ task :version_stats, :commit_ranges do |t, args|
 end
 
 def assert_clean_git_status(name)
-  unless `git status` =~ /nothing to commit,? \(?working directory clean\)?/
+  unless `git status --porcelain`.empty?
     abort "#{name} has uncommitted changes"
   end
 end
