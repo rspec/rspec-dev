@@ -62,6 +62,11 @@ function rspec_support_compatible {
   fi
 }
 
+function additional_specs_available {
+  type run_additional_specs > /dev/null 2>&1
+  return $?
+}
+
 function documentation_enforced {
   if [ -x ./bin/yard ]; then
     if is_mri_2plus; then
