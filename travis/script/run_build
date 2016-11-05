@@ -10,6 +10,11 @@ fi
 fold "binstub check" check_binstubs
 
 fold "specs" run_specs_and_record_done
+
+if additional_specs_available; then
+  fold "additional specs" run_additional_specs
+fi
+
 fold "cukes" run_cukes
 
 if documentation_enforced; then
