@@ -17,9 +17,9 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1
-  - 2.2.5
-  - 2.3.3
-  - 2.4.0-preview1
+  - 2.2.7
+  - 2.3.4
+  - 2.4.1
   - ruby-head
   - ree
   - rbx
@@ -40,7 +40,7 @@ matrix:
       env: JRUBY_OPTS='--server -Xcompile.invokedynamic=false'
     - rvm: ruby-head
     - rvm: rbx
-    - rvm: 2.4.0-preview1
+    - rvm: 2.4.1
   fast_finish: true
 branches:
   only:
