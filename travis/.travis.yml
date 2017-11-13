@@ -24,7 +24,7 @@ rvm:
   - ruby-head
   - ree
   - rbx-3
-  - jruby
+  - jruby-9.1.7.0 # pin JRuby to this until travis/rvm can install later versions
   - jruby-head
   - jruby-1.7
 env:
