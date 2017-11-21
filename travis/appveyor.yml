@@ -25,6 +25,6 @@ test_script:
 
 environment:
   matrix:
-    # ruby_version: '20' doesn't work for some reason
+    - ruby_version: '200'
     - ruby_version: '193'
     - ruby_version: '21'
