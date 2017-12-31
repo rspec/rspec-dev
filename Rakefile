@@ -398,43 +398,6 @@ task :release_notes, :target do |_, args|
   end
 end
 
-namespace :doc do
-  desc "generate docs"
-  task :generate do
-    Dir.chdir("repos") do
-      sh "ln -s rspec-core/README.md RSpecCore.md" unless test ?f, "RSpecCore.md"
-      sh "ln -s rspec-expectations/README.md RSpecExpectations.md" unless test ?f, "RSpecExpectations.md"
-      sh "ln -s rspec-mocks/README.md RSpecMocks.md" unless test ?f, "RSpecMocks.md"
-      sh "ln -s rspec-rails/README.md RSpecRails.md" unless test ?f, "RSpecRails.md"
-      sh "yardoc"
-      sh "rm RSpecCore.md"
-      sh "rm RSpecExpectations.md"
-      sh "rm RSpecMocks.md"
-      sh "rm RSpecRails.md"
-      sh %q|ruby -pi.bak -e "gsub(/Documentation by YARD \d+\.\d+\.\d+/, 'RSpec 2.8')" doc/_index.html|
-      sh %q|ruby -pi.bak -e "gsub(/<h1 class=\"alphaindex\">Alphabetic Index<\/h1>/, '')" doc/_index.html|
-      sh "cp doc/_index.html doc/index.html"
-    end
-  end
-
-  desc "clobber generated docs"
-  task :clobber do
-    Dir.chdir("repos") do
-      sh "rm -rf .yardoc"
-      sh "rm -rf doc"
-    end
-  end
-
-  desc "publish generated docs"
-  task :publish do
-    Dir.chdir("repos") do
-      `rsync -av --delete doc david@davidchelimsky.net:/www/api.rspec.info`
-    end
-  end
-end
-
-task :rdoc => ["doc:clobber", "doc:generate"]
-
 desc "Lists stats generated from the logs for the provided commit ranges"
 task :version_stats, :commit_ranges do |t, args|
   projects = Projects - ["rspec"]
