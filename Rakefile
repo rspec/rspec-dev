@@ -427,11 +427,12 @@ def confirm_branch_name(name)
   return name unless system("git show-branch #{name} > /dev/null 2>&1")
 
   puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
-  case STDIN.gets.downcase
-  when /^y/
+  case input = STDIN.gets.downcase
+  when /^y/i
     `git branch -D #{name}`
   when /^r(?:ename)? (.*)$/
     name = $1
+  when /^n/i
   else
     abort "Unknown option: #{input}"
   end
