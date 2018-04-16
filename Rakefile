@@ -305,6 +305,10 @@ namespace :common_markdown_files do
     end
   end
 
+  def github_template_file?(file)
+    file.basename.to_s =~ /ISSUE_TEMPLATE/
+  end
+
   def common_markdown_files_with_comments(project_name)
     markdown_root = BaseRspecPath.join('common_markdown_files')
     file_names = Pathname.glob(markdown_root.join('**', '{*,.*}')).select do |f|
@@ -316,7 +320,7 @@ namespace :common_markdown_files do
       content = markdown_file_content(file, project_name)
 
       lines = content.each_line.each_with_object([]) do |line, all|
-        if !comments_added && !line.start_with?('#!')
+        if !github_template_file?(file) && !comments_added && !line.start_with?('#!')
           all.concat([
             "<!---\n",
             "This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
