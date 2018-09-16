@@ -73,8 +73,9 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
       else
         "-i''"
       end
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/stylesheets\\\/docs/' {}; popd}
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/javascripts\\\/docs/' {}; popd}
+
+    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}; popd}
+    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}; popd}
   end
 end
 
