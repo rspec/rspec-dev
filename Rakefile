@@ -123,7 +123,7 @@ namespace :gem do
   end
 end
 
-desc "Changes to a different branch on all repos and re-bundles"
+desc "Changes to a different branch on all repos and re-bundles. For a new branch rake 'git:checkout[-b new-branch]"
 task :change_branch, [:version] => ["git:checkout", "git:pull", "bundle:unlock", "bundle:install"]
 
 namespace :dev do
