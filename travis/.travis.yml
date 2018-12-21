@@ -5,7 +5,8 @@ cache:
   directories:
     - ../bundle
 before_install:
-  - gem update --system # https://github.com/travis-ci/travis-ci/issues/8978#issuecomment-354036443
+  # We need to ensure the latest version of Rubygems, unless we're on an old Ruby.
+  - gem update --system $(ruby -e "puts '2.7.8' if ENV['RUBY_VERSION'] >= '2.3.0'")
   - gem install bundler
   - unset _JAVA_OPTIONS
   - "script/clone_all_rspec_repos"
