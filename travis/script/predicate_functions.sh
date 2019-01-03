@@ -54,6 +54,14 @@ function is_mri_2plus {
   fi
 }
 
+function is_ruby_23_plus {
+  if ruby -e "exit(RUBY_VERSION.to_f >= 2.3)"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function rspec_support_compatible {
   if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ] && [ "$MAINTENANCE_BRANCH" != "2-14-maintenance" ]; then
     return 0
