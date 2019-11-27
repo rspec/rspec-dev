@@ -295,10 +295,10 @@ namespace :travis do
   end
 end
 
-namespace :common_markdown_files do
-  def update_common_markdown_files_in_repos
-    update_files_in_repos('common markdown files', ' [ci skip]') do |name|
-      common_markdown_files_with_comments(name).each do |file|
+namespace :common_plaintext_files do
+  def update_common_plaintext_files_in_repos
+    update_files_in_repos('common plaintext files', ' [ci skip]') do |name|
+      common_plaintext_files_with_comments(name).each do |file|
         full_file_name = ReposPath.join(name, file.file_name)
         full_file_name.write(file.contents)
         full_file_name.chmod(file.mode) # ensure executables are set
@@ -310,24 +310,31 @@ namespace :common_markdown_files do
     file.basename.to_s =~ /ISSUE_TEMPLATE/
   end
 
-  def common_markdown_files_with_comments(project_name)
-    markdown_root = BaseRspecPath.join('common_markdown_files')
-    file_names = Pathname.glob(markdown_root.join('**', '{*,.*}')).select do |f|
+  def common_plaintext_files_with_comments(project_name)
+    plaintext_root = BaseRspecPath.join('common_plaintext_files')
+    file_names = Pathname.glob(plaintext_root.join('{.[!.],*}*', '{*,.*}')).select do |f|
       f.file?
     end
 
     file_names.map do |file|
       comments_added = false
-      content = markdown_file_content(file, project_name)
+      content = plaintext_file_content(file, project_name)
 
       lines = content.each_line.each_with_object([]) do |line, all|
         if !github_template_file?(file) && !comments_added && !line.start_with?('#!')
-          all.concat([
-            "<!---\n",
-            "This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
-            "DO NOT modify it by hand as your changes will get lost the next time it is generated.\n",
-            "-->\n\n",
-          ])
+          if file.extname == ".yml"
+            all.concat([
+              "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+              "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n"
+            ])
+          else
+            all.concat([
+              "<!---\n",
+              "This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
+              "DO NOT modify it by hand as your changes will get lost the next time it is generated.\n",
+              "-->\n\n",
+            ])
+          end
           comments_added = true
         end
 
@@ -335,7 +342,7 @@ namespace :common_markdown_files do
       end
 
       ReadFile.new(
-        file.relative_path_from(markdown_root).sub(/\.erb$/, ''),
+        file.relative_path_from(plaintext_root).sub(/\.erb$/, ''),
         lines.join,
         file.stat.mode
       )
@@ -349,20 +356,20 @@ namespace :common_markdown_files do
     end
   end
 
-  def markdown_file_content(file, project_name)
+  def plaintext_file_content(file, project_name)
     raw_contents = file.read
     return raw_contents unless file.extname == ".erb"
     ERBRenderer.new(project_name, raw_contents).render
   end
 
-  desc "Update common markdown files"
+  desc "Update common plaintext files"
   task :update_files do
-    update_common_markdown_files_in_repos
+    update_common_plaintext_files_in_repos
   end
 
-  desc "Updates the common markdown files files and creates a PR"
+  desc "Updates the common plaintext files files and creates a PR"
   task :create_pr_with_updates do
-    force_update update_common_markdown_files_in_repos
+    force_update update_common_plaintext_files_in_repos
   end
 end
 
@@ -380,6 +387,7 @@ end
 
 desc "generate release notes from changelogs"
 task :release_notes, :target do |_, args|
+
   target = args[:target] || 'blog'
   ['rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support'].each do |project|
     lines = []
