@@ -92,7 +92,7 @@ listed below. If you submit an issue, please include a link to either of:
 ## Load path and rubygems
 
 Not everybody uses rubygems as their package management system. If this
-sounds odd to you, read http://gist.github.com/54177.
+sounds odd to you, read https://gist.github.com/54177.
 
 In light of this fact, these repositories are "require 'rubygems'" free. The
 included Rakefiles use Bundler, which effectively manages all of this for
@@ -118,7 +118,7 @@ from the rspec-dev directory, or you'll see `LoadError`s.
 
 If you get a `SSL error` in Windows, you can follow the instructions on this [link](https://gist.github.com/luislavena/f064211759ee0f806c88) to fix it.  
 
-If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [http://rubyinstaller.org/downloads](http://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
+If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [https://rubyinstaller.org/downloads](https://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
 ## different problem?
 
