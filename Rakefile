@@ -325,7 +325,7 @@ namespace :common_plaintext_files do
           if file.extname == ".yml"
             all.concat([
               "# This file was generated on #{Time.now.iso8601} from the rspec-dev repo.\n",
-              "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n"
+              "# DO NOT modify it by hand as your changes will get lost the next time it is generated.\n\n"
             ])
           else
             all.concat([
