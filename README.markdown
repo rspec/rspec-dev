@@ -138,3 +138,10 @@ by submitting a patch to this README.
 * [https://github.com/rspec/rspec-expectations](https://github.com/rspec/rspec-expectations)
 * [https://github.com/rspec/rspec-mocks](https://github.com/rspec/rspec-mocks)
 * [https://github.com/rspec/rspec-rails](https://github.com/rspec/rspec-rails)
+
+## Other gems
+
+* [https://github.com/rspec/rspec-activemodel-mocks](https://github.com/rspec/rspec-activemodel-mocks)
+* [https://github.com/rspec/rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers)
+* [https://github.com/rspec/rspec-its](https://github.com/rspec/rspec-its)
+* [https://github.com/rspec/rspec-legacy_formatters](https://github.com/rspec/rspec-legacy_formatters)
