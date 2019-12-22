@@ -70,14 +70,6 @@ function rspec_rails_compatible {
   fi
 }
 
-function rspec_support_compatible {
-  if [ "$MAINTENANCE_BRANCH" != "2-99-maintenance" ] && [ "$MAINTENANCE_BRANCH" != "2-14-maintenance" ]; then
-    return 0
-  else
-    return 1
-  fi
-}
-
 function additional_specs_available {
   type run_additional_specs > /dev/null 2>&1
   return $?
