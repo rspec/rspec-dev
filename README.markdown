@@ -120,13 +120,13 @@ If you get a `SSL error` in Windows, you can follow the instructions on this [li
 
 If you get this error `Gem::InstallError: The redcarpet native gem requires installed build tools`, download the development kit from [https://rubyinstaller.org/downloads](https://rubyinstaller.org/downloads). You can follow the installation instructions [here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
 
-## different problem?
+## Different problem?
 
 If you run into a problem not documented here, please check the rspec-dev
 issues tracker to see if someone else has already reported it. If not, please
 add one.
 
-## solution to a problem not documented here?
+## Solution to a problem not documented here?
 
 If you solve a problem that is not documented here, please share the love
 by submitting a patch to this README.
