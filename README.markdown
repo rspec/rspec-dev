@@ -142,7 +142,7 @@ by submitting a patch to this README.
 ## Other gems
 These gems were extracted from past versions of RSpec in order to maintain 
 compatibility for older spec suites upgrading to new versions, in particular
-`rspec-its` adds back the `it(:thing)` style of spec, `rspec-collection_matchers`, 
+`rspec-its` adds back the `its(:thing)` style of spec, `rspec-collection_matchers` 
 adds back `have(n).items` style matchers, `rspec-legacy_formatters` enables old
 formatters to operate with RSpec 3+. These gems are in general not officially
 maintained by the rspec team but may receive support and maintenance as needs require.
