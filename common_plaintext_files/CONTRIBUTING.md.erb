@@ -37,3 +37,38 @@ test case. To make this process easier, we have prepared one basic
 Maintenance branches are how we manage the different supported point releases
 of RSpec. As such, while they might look like good candidates to merge into
 master, please do not open pull requests to merge them.
+
+## Working on multiple RSpec gems at the same time
+
+RSpec is composed of multiple gems (`rspec-core`, `rspec-mocks`, etc). Sometimes you have
+to work on few of them at the same time. When submitting your work, we ask you to provide 
+a green CI. To do so, please add a commit that cross pin to the right branch of the
+dependent gem. For example, we do a change in `rspec-expectations` that rely on a change
+we did on `rspec-mocks`. We add a commit with the title:
+
+>[WIP] Use rspec-mocks with "custom-failure-message" branch
+
+And content:
+
+```diff
+diff --git a/Gemfile b/Gemfile
+
+-%w[rspec rspec-core rspec-mocks rspec-support].each do |lib|
++%w[rspec rspec-core rspec-support].each do |lib|
+   library_path = File.expand_path("../../#{lib}", __FILE__)
+   if File.exist?(library_path) && !ENV['USE_GIT_REPOS']
+     gem lib, :path => library_path
+@@ -11,6 +11,7 @@ branch = File.read(File.expand_path("../maintenance-branch", __FILE__)).chomp
+     gem lib, :git => "https://github.com/rspec/#{lib}.git", :branch => branch
+   end
+ end
++gem 'rspec-mocks', :git => "https://github.com/rspec/rspec-mocks.git", :branch => "custom-failure-message"
+```
+
+The steps are:
+1. Cross pin the branches
+2. Check they go green
+3. Remove the commit from one. Merge ignoring failure
+4. Remove the commit from the other, check still green.
+5. Merge
+6. Rebuild other master to check still green
