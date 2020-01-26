@@ -68,14 +68,14 @@ diff --git a/Gemfile b/Gemfile
 
 In general the process is:
 1. Create PRs explaining what you are trying to achieve.
-1. Pin the repositories to each other.
-2. Check they pass (go green).
-3. Await review if appropriate.
-4. Remove the commit from one. We will merge ignoring the failure.
-5. Remove the commit from the other, check it passes with the other commit now on master.
-6. Merge the other.
-7. Rebuild the other master to check it still passes.
+2. Pin the repositories to each other.
+3. Check they pass (go green).
+4. Await review if appropriate.
+5. Remove the commit from one. We will merge ignoring the failure.
+6. Remove the commit from the other, check it passes with the other commit now on master.
+7. Merge the other.
+8. Rebuild the other master to check it still passes.
 
-Steps 4-7 should happen contiguously (e.g. one after another but within a short timespan)
+Steps 5-8 should happen contiguously (e.g. one after another but within a short timespan)
 so that we don't leave a broken master around. It is important to triage that build process
 and revert if necessary.
