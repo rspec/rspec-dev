@@ -41,10 +41,11 @@ master, please do not open pull requests to merge them.
 ## Working on multiple RSpec gems at the same time
 
 RSpec is composed of multiple gems (`rspec-core`, `rspec-mocks`, etc). Sometimes you have
-to work on few of them at the same time. When submitting your work, we ask you to provide 
-a green CI. To do so, please add a commit that cross pin to the right branch of the
-dependent gem. For example, we do a change in `rspec-expectations` that rely on a change
-we did on `rspec-mocks`. We add a commit with the title:
+to work on a combination of them at the same time. When submitting your code for review,
+we ask that you get a passing build (green CI). If you are working across the repositories,
+please add a commit that temporarily pins your PR to the right branch of the other repository
+you depend on. For example, if we wanted a change in `rspec-expectations` that relied on a
+change for on `rspec-mocks`. We add a commit with the title:
 
 >[WIP] Use rspec-mocks with "custom-failure-message" branch
 
@@ -65,10 +66,16 @@ diff --git a/Gemfile b/Gemfile
 +gem 'rspec-mocks', :git => "https://github.com/rspec/rspec-mocks.git", :branch => "custom-failure-message"
 ```
 
-The steps are:
-1. Cross pin the branches
-2. Check they go green
-3. Remove the commit from one. Merge ignoring failure
-4. Remove the commit from the other, check still green.
-5. Merge
-6. Rebuild other master to check still green
+In general the process is:
+1. Create PRs explaining what you are trying to achieve.
+1. Pin the repositories to each other.
+2. Check they pass (go green).
+3. Await review if appropriate.
+4. Remove the commit from one. We will merge ignoring the failure.
+5. Remove the commit from the other, check it passes with the other commit now on master.
+6. Merge the other.
+7. Rebuild the other master to check it still passes.
+
+Steps 4-7 should happen contiguously (e.g. one after another but within a short timespan)
+so that we don't leave a broken master around. It is important to triage that build process
+and revert if necessary.
