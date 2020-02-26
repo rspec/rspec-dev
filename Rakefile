@@ -66,7 +66,7 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   each_project :except => UnDocumentedProjects do |project|
     cmd = "bundle install && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
-                            --yardopts ../.yardopts \
+                            --yardopts .yardopts \
                             --plugin rspec-docs-template \
                             --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     puts cmd
