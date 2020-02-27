@@ -64,7 +64,11 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   args.with_defaults(:website_path => "../rspec.github.io")
   run_command "git checkout #{args[:branch]} && git pull --rebase"
   each_project :except => UnDocumentedProjects do |project|
-    cmd = "bundle install && RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard --plugin rspec-docs-template --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+    cmd = "bundle install && \
+           RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
+                            --yardopts .yardopts \
+                            --plugin rspec-docs-template \
+                            --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     puts cmd
     Bundler.clean_system(cmd)
     in_place =
