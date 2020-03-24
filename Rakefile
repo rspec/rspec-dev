@@ -8,6 +8,7 @@ require 'erb'
 
 Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
 UnDocumentedProjects = %w[ rspec rspec-support ]
+SemverUnlinkedProjects =  ['rspec-rails']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
@@ -63,7 +64,7 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
   run_command "git checkout #{args[:branch]} && git pull --rebase"
-  each_project :except => UnDocumentedProjects do |project|
+  each_project :except => (UnDocumentedProjects + SemverUnlinkedProjects) do |project|
     cmd = "bundle install && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
                             --yardopts .yardopts \
