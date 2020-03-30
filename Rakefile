@@ -372,8 +372,8 @@ namespace :common_plaintext_files do
   end
 
   desc "Updates the common plaintext files files and creates a PR"
-  task :create_pr_with_updates do
-    force_update(update_common_plaintext_files_in_repos, custom_pr_comment)
+  task :create_pr_with_updates :custom_pr_comment do |_t, args|
+    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment])
   end
 end
 
