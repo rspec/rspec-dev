@@ -224,7 +224,7 @@ def create_pull_request(project_name, branch, custom_pr_comment, base=BASE_BRANC
   github_client.create_pull_request(
     "rspec/#{project_name}", base, branch,
     "Updates from rspec-dev (#{Date.today.iso8601})",
-    "These are some updates, generated from rspec-dev's rake tasks.\n\n#{custom_pr_comment}"
+    ["These are some updates, generated from rspec-dev's rake tasks.", custom_pr_comment].join("\n\n")
   )
 end
 
