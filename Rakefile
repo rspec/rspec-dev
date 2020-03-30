@@ -459,7 +459,7 @@ def confirm_branch_name(name)
 end
 
 def each_project_with_common_build(&b)
-  except = %w[ rspec ]
+  except = %w[ rspec rspec-rails ]
   except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
   each_project(:except => except, &b)
 end
