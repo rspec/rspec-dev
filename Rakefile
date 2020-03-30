@@ -220,11 +220,11 @@ BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'master'
                               Integer(BASE_BRANCH[/^\d+/])
                             end
 
-def create_pull_request(project_name, branch, base=BASE_BRANCH)
+def create_pull_request(project_name, branch, custom_pr_comment, base=BASE_BRANCH)
   github_client.create_pull_request(
     "rspec/#{project_name}", base, branch,
     "Updates from rspec-dev (#{Date.today.iso8601})",
-    "These are some updates, generated from rspec-dev's rake tasks."
+    "These are some updates, generated from rspec-dev's rake tasks.\n\n#{custom_pr_comment}"
   )
 end
 
@@ -294,8 +294,8 @@ namespace :travis do
   end
 
   desc "Updates the travis files and creates a PR"
-  task :create_pr_with_updates do
-    force_update update_travis_files_in_repos
+  task :create_pr_with_updates, :custom_pr_comment do |t, args|
+    force_update(update_travis_files_in_repos, args[:custom_pr_comment])
   end
 end
 
@@ -373,7 +373,7 @@ namespace :common_plaintext_files do
 
   desc "Updates the common plaintext files files and creates a PR"
   task :create_pr_with_updates do
-    force_update update_common_plaintext_files_in_repos
+    force_update(update_common_plaintext_files_in_repos, custom_pr_comment)
   end
 end
 
@@ -463,16 +463,16 @@ def each_project_with_common_build(&b)
   each_project(:except => except, &b)
 end
 
-def force_update(branch)
+def force_update(branch, custom_pr_comment)
   each_project_with_common_build do |name|
     unless system("git push origin #{branch}")
       puts "Push failed, force? (y/n)"
       if STDIN.gets.downcase =~ /^y/
         sh "git push origin +#{branch}"
       end
-      create_pull_request(name, branch) rescue nil
+      create_pull_request(name, branch, custom_pr_comment) rescue nil
     else
-      create_pull_request(name, branch)
+      create_pull_request(name, branch, custom_pr_comment)
     end
     sh "git checkout #{BASE_BRANCH} && git branch -D #{branch}" # no need to keep it around
   end
