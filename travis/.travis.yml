@@ -29,6 +29,7 @@ rvm:
   - jruby-9.1.7.0 # pin JRuby to this until travis/rvm can install later versions
   - jruby-head
   - jruby-1.7
+  - truffleruby
 env:
   - JRUBY_OPTS='--dev'
 matrix:
@@ -39,6 +40,7 @@ matrix:
     - rvm: jruby-head
     - rvm: ruby-head
     - rvm: rbx-3
+    - rvm: truffleruby
   fast_finish: true
 branches:
   only:
