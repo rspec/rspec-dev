@@ -71,7 +71,7 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
                             --plugin rspec-docs-template \
                             --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     puts cmd
-    Bundler.clean_system(cmd)
+    Bundler.unbundled_system(cmd)
     in_place =
       if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
         "-i ''"
@@ -79,8 +79,8 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
         "-i''"
       end
 
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}; popd}
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}; popd}
+    Bundler.unbundled_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}; popd}
+    Bundler.unbundled_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}; popd}
   end
 end
 
