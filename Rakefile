@@ -26,7 +26,7 @@ def run_command(command, opts={})
     FileUtils.cd(path) do
       puts "#{'='*3} #{dir} #{'='*(40 - dir.length)}"
       begin
-        Bundler.clean_system(command)
+        Bundler.unbundled_system(command)
       rescue Exception => e
         puts e.backtrace
       end
@@ -65,13 +65,13 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   args.with_defaults(:website_path => "../rspec.github.io")
   run_command "git checkout #{args[:branch]} && git pull --rebase"
   each_project :except => (UnDocumentedProjects + SemverUnlinkedProjects) do |project|
+    doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle install && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
                             --yardopts .yardopts \
-                            --plugin rspec-docs-template \
-                            --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+                            --output-dir #{doc_destination_path}"
     puts cmd
-    Bundler.clean_system(cmd)
+    Bundler.unbundled_system(cmd)
     in_place =
       if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
         "-i ''"
@@ -79,8 +79,9 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
         "-i''"
       end
 
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}; popd}
-    Bundler.clean_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}; popd}
+    Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
+    Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
+    Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
   end
 end
 
