@@ -65,10 +65,11 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
   args.with_defaults(:website_path => "../rspec.github.io")
   run_command "git checkout #{args[:branch]} && git pull --rebase"
   each_project :except => (UnDocumentedProjects + SemverUnlinkedProjects) do |project|
+    doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle install && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
                             --yardopts .yardopts \
-                            --output-dir #{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+                            --output-dir #{doc_destination_path}"
     puts cmd
     Bundler.unbundled_system(cmd)
     in_place =
@@ -78,9 +79,9 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
         "-i''"
       end
 
-    Bundler.unbundled_system %Q{pushd #{args[:website_path]}; ag -l src=\\"\\\(?:..\/\\\)*js | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}; popd}
-    Bundler.unbundled_system %Q{pushd #{args[:website_path]}; ag -l href=\\"\\\(?:..\/\\\)*css | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}; popd}
-    Bundler.unbundled_system %Q{pushd #{args[:website_path]}; ag --html -l | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}; popd}
+    Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
+    Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
+    Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
   end
 end
 
