@@ -63,7 +63,7 @@ desc "Updates the rspec.github.io docs"
 task :update_docs, [:version, :branch, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
-  run_command "git checkout #{args[:branch]} && git pull --rebase"
+  run_command "git fetch --tags && git checkout `git tag | grep #{args[:version]} | tail -1`"
   each_project :except => (UnDocumentedProjects + SemverUnlinkedProjects) do |project|
     doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle install && \
