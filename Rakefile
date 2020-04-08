@@ -71,7 +71,7 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
 
     `git checkout #{latest_release}`
     doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
-    cmd = "bundle install && \
+    cmd = "bundle update && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
                             --yardopts .yardopts \
                             --output-dir #{doc_destination_path}"
