@@ -8,7 +8,6 @@ require 'erb'
 
 Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
 UnDocumentedProjects = %w[ rspec rspec-support ]
-SemverUnlinkedProjects =  ['rspec-rails']
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 
@@ -63,8 +62,14 @@ desc "Updates the rspec.github.io docs"
 task :update_docs, [:version, :branch, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
-  run_command "git fetch --tags && git checkout `git tag | grep #{args[:version]} | tail -1`"
-  each_project :except => (UnDocumentedProjects + SemverUnlinkedProjects) do |project|
+  each_project :except => (UnDocumentedProjects) do |project|
+    latest_release = `git tag | grep '^v\\\d.\\\d.\\\d$' | grep v#{args[:version]} | tail -1`
+
+    if latest_release.empty?
+      next "No release found for #{args[:version]} in #{`pwd`}"
+    end
+
+    `git fetch --tags && git checkout #{latest_release}`
     doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle install && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
