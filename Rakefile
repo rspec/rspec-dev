@@ -221,10 +221,15 @@ BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'master'
                             end
 
 def create_pull_request(project_name, branch, custom_pr_comment, base=BASE_BRANCH)
+  body = [
+    "These are some updates, generated from rspec-dev's rake tasks.",
+    custom_pr_comment
+  ].join("\n\n").strip
+
   github_client.create_pull_request(
     "rspec/#{project_name}", base, branch,
     "Updates from rspec-dev (#{Date.today.iso8601})",
-    ["These are some updates, generated from rspec-dev's rake tasks.", custom_pr_comment].join("\n\n")
+    body
   )
 end
 
@@ -372,7 +377,7 @@ namespace :common_plaintext_files do
   end
 
   desc "Updates the common plaintext files files and creates a PR"
-  task :create_pr_with_updates :custom_pr_comment do |_t, args|
+  task :create_pr_with_updates, :custom_pr_comment do |_t, args|
     force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment])
   end
 end
