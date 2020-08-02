@@ -36,7 +36,7 @@ test case. To make this process easier, we have prepared one basic
 
 Maintenance branches are how we manage the different supported point releases
 of RSpec. As such, while they might look like good candidates to merge into
-master, please do not open pull requests to merge them.
+main, please do not open pull requests to merge them.
 
 ## Working on multiple RSpec gems at the same time
 
@@ -72,10 +72,10 @@ In general the process is:
 3. Check they pass (go green).
 4. Await review if appropriate.
 5. Remove the commit from one. We will merge ignoring the failure.
-6. Remove the commit from the other, check it passes with the other commit now on master.
+6. Remove the commit from the other, check it passes with the other commit now on main.
 7. Merge the other.
-8. Rebuild the other master to check it still passes.
+8. Rebuild the other main to check it still passes.
 
 Steps 5-8 should happen contiguously (e.g. one after another but within a short timespan)
-so that we don't leave a broken master around. It is important to triage that build process
+so that we don't leave a broken main around. It is important to triage that build process
 and revert if necessary.

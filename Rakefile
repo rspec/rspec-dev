@@ -220,8 +220,8 @@ def github_client
   end
 end
 
-BASE_BRANCH = ENV.fetch('BRANCH', 'master')
-BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'master'
+BASE_BRANCH = ENV.fetch('BRANCH', 'main')
+BASE_BRANCH_MAJOR_VERSION = if BASE_BRANCH == 'main'
                               3
                             else
                               Integer(BASE_BRANCH[/^\d+/])
