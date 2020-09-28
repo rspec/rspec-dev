@@ -41,7 +41,6 @@ matrix:
   allow_failures:
     - rvm: jruby-head
     - rvm: ruby-head
-    - rvm: ruby-3.0.0-preview1
     - rvm: rbx-3
   fast_finish: true
 branches:
