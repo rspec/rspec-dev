@@ -243,8 +243,8 @@ end
 namespace :travis do
   ReadFile = Struct.new(:file_name, :contents, :mode)
 
-  def update_travis_files_in_repos
-    update_files_in_repos('travis build scripts') do |name|
+  def update_travis_files_in_repos(opts={})
+    update_files_in_repos('travis build scripts', '', opts) do |name|
       around_update_travis_build do
         travis_files_with_comments.each do |file|
           full_file_name = ReposPath.join(name, file.file_name)
@@ -307,7 +307,8 @@ namespace :travis do
 
   desc "Updates the travis files and creates a PR"
   task :create_pr_with_updates, :custom_pr_comment do |t, args|
-    force_update(update_travis_files_in_repos, args[:custom_pr_comment])
+    opts = { except: %w[ rspec-rails ] }
+    force_update(update_travis_files_in_repos(opts), args[:custom_pr_comment], opts)
   end
 end
 
@@ -469,14 +470,15 @@ def confirm_branch_name(name)
   name
 end
 
-def each_project_with_common_build(&b)
+def each_project_with_common_build(opts={}, &b)
   except = %w[ rspec ]
+  except += Array(opts[:except])
   except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
   each_project(:except => except, &b)
 end
 
-def force_update(branch, custom_pr_comment)
-  each_project_with_common_build do |name|
+def force_update(branch, custom_pr_comment, opts={})
+  each_project_with_common_build(opts) do |name|
     unless system("git push origin #{branch}")
       puts "Push failed, force? (y/n)"
       if STDIN.gets.downcase =~ /^y/
@@ -490,19 +492,19 @@ def force_update(branch, custom_pr_comment)
   end
 end
 
-def update_files_in_repos(purpose, suffix='')
+def update_files_in_repos(purpose, suffix='', opts={})
   branch_name = "update-#{purpose.gsub ' ', '-'}-#{ENV.fetch('BRANCH_DATE',Date.today.iso8601)}-for-#{BASE_BRANCH}"
 
-  each_project_with_common_build do |proj|
+  each_project_with_common_build(opts) do |proj|
     assert_clean_git_status(proj)
   end
 
-  each_project_with_common_build do |name|
+  each_project_with_common_build(opts) do |name|
     sh "git checkout #{BASE_BRANCH}"
     sh "git pull --rebase"
   end
 
-  each_project_with_common_build do |name|
+  each_project_with_common_build(opts) do |name|
     branch_name = confirm_branch_name(branch_name)
     sh "git checkout -b #{branch_name}"
 
