@@ -151,3 +151,8 @@ maintained by the RSpec team but may receive support and maintenance as needs re
 * [https://github.com/rspec/rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers)
 * [https://github.com/rspec/rspec-its](https://github.com/rspec/rspec-its)
 * [https://github.com/rspec/rspec-legacy_formatters](https://github.com/rspec/rspec-legacy_formatters)
+
+## Ruby Engine Support
+* Currently only MRI and JRuby releases are officially supported by RSpec.
+* Running RSpec on other Ruby implementations might work, however issues with those implementations should be reported on their issue tracker.
+
