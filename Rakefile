@@ -27,6 +27,7 @@ def run_command(command, opts={})
       begin
         Bundler.unbundled_system(command)
       rescue Exception => e
+        puts e
         puts e.backtrace
       end
       puts
