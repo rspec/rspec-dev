@@ -40,3 +40,4 @@ branches:
   only:
     - main
     - /^\d+-\d+-maintenance$/
+    - /^\d+-\d+-dev$/
