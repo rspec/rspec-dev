@@ -27,6 +27,7 @@ def run_command(command, opts={})
       begin
         Bundler.unbundled_system(command)
       rescue Exception => e
+        puts e
         puts e.backtrace
       end
       puts
@@ -240,14 +241,15 @@ def create_pull_request(project_name, branch, custom_pr_comment, base=BASE_BRANC
   )
 end
 
-namespace :travis do
+namespace :ci do
   ReadFile = Struct.new(:file_name, :contents, :mode)
 
-  def update_travis_files_in_repos(opts={})
-    update_files_in_repos('travis build scripts', '', opts) do |name|
-      around_update_travis_build do
-        travis_files_with_comments.each do |file|
+  def update_ci_files_in_repos(opts={})
+    update_files_in_repos('ci build scripts', '', opts) do |name|
+      around_update_ci_build do
+        ci_files_with_comments.each do |file|
           full_file_name = ReposPath.join(name, file.file_name)
+          ensure_directory_exists(File.dirname(full_file_name))
           full_file_name.write(file.contents)
           full_file_name.chmod(file.mode) # ensure executables are set
         end
@@ -257,9 +259,12 @@ namespace :travis do
     end
   end
 
-  def travis_files_with_comments
-    travis_root = BaseRspecPath.join('travis')
-    file_names = Pathname.glob(travis_root.join('**', '{*,.*}')).select do |f|
+  def ci_files_with_comments
+    ci_root = BaseRspecPath.join('ci')
+    file_names = Pathname.glob(ci_root.join('**', '{*,.*}')).select do |f|
+      f.file?
+    end
+    file_names += Pathname.glob(ci_root.join('.github', '**', '{*,.*}')).select do |f|
       f.file?
     end
 
@@ -278,11 +283,16 @@ namespace :travis do
       end
 
       ReadFile.new(
-        file.relative_path_from(travis_root),
+        file.relative_path_from(ci_root),
         lines.join,
         file.stat.mode
       )
     end
+  end
+
+  def ensure_directory_exists(dirname)
+    return if Dir.exist?(dirname)
+    Dir.mkdir(dirname)
   end
 
   def update_maintenance_branch
@@ -293,22 +303,24 @@ namespace :travis do
     sh script_file if File.exist?(script_file)
   end
 
-  def around_update_travis_build
+  def around_update_ci_build
     run_if_exists './script/before_update_travis_build.sh'
+    run_if_exists './script/before_update_build.sh'
     yield if block_given?
   ensure
+    run_if_exists './script/after_update_build.sh'
     run_if_exists './script/after_update_travis_build.sh'
   end
 
-  desc "Update travis build files"
+  desc "Update build files"
   task :update_files do
-    update_travis_files_in_repos
+    update_ci_files_in_repos
   end
 
-  desc "Updates the travis files and creates a PR"
+  desc "Updates the CI files and creates a PR"
   task :create_pr_with_updates, :custom_pr_comment do |t, args|
     opts = { except: %w[ rspec-rails ] }
-    force_update(update_travis_files_in_repos(opts), args[:custom_pr_comment], opts)
+    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], opts)
   end
 end
 

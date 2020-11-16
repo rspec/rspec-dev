@@ -16,15 +16,6 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
-  - 2.1
-  - 2.2.10
-  - 2.3.8
-  - 2.4.10
-  - 2.5.8
-  - 2.6.6
-  - 2.7.1
-  - ruby-3.0.0-preview1
-  - ruby-head
   - ree
   - rbx-3
   - jruby-9.1.7.0 # pin JRuby to this until travis/rvm can install later versions
@@ -49,3 +40,4 @@ branches:
   only:
     - main
     - /^\d+-\d+-maintenance$/
+    - /^\d+-\d+-dev$/
