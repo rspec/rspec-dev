@@ -248,6 +248,7 @@ namespace :ci do
       around_update_ci_build do
         ci_files_with_comments.each do |file|
           full_file_name = ReposPath.join(name, file.file_name)
+          ensure_directory_exists(File.dirname(full_file_name))
           full_file_name.write(file.contents)
           full_file_name.chmod(file.mode) # ensure executables are set
         end
@@ -260,6 +261,9 @@ namespace :ci do
   def ci_files_with_comments
     ci_root = BaseRspecPath.join('ci')
     file_names = Pathname.glob(ci_root.join('**', '{*,.*}')).select do |f|
+      f.file?
+    end
+    file_names += Pathname.glob(ci_root.join('.github', '**', '{*,.*}')).select do |f|
       f.file?
     end
 
@@ -283,6 +287,11 @@ namespace :ci do
         file.stat.mode
       )
     end
+  end
+
+  def ensure_directory_exists(dirname)
+    return if Dir.exist?(dirname)
+    Dir.mkdir(dirname)
   end
 
   def update_maintenance_branch
