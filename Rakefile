@@ -152,6 +152,33 @@ namespace :dev do
 end
 
 namespace :git do
+  desc 'create version branch'
+  task :create_version_branch do
+    unless ENV['BRANCH'] && ENV['VERSION']
+      puts "Please specify a branch and a version .e.g"
+      puts "BRANCH='4-0-dev' VERSION='4.0.0.pre' rake git:create_version_branch"
+      exit(1)
+    end
+
+    branch = ENV['BRANCH']
+    version = ENV['VERSION']
+
+    each_project do |project|
+      if system("git show-branch #{branch} > /dev/null 2>&1")
+        sh "git checkout #{branch}"
+      else
+        sh "git checkout -b #{branch} main"
+      end
+
+      update_maintenance_branch(true)
+      update_version_file(project, version)
+
+      sh "git add ."
+      sh "git ci -m 'Update version to #{version}'"
+    end
+    force_update(branch, nil)
+  end
+
   { :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
@@ -295,8 +322,13 @@ namespace :ci do
     Dir.mkdir(dirname)
   end
 
-  def update_maintenance_branch
-    File.write("./maintenance-branch", BASE_BRANCH) unless File.exist?('./maintenance-branch')
+  def update_maintenance_branch(override = false)
+    File.write("./maintenance-branch", BASE_BRANCH) if override || !File.exist?('./maintenance-branch')
+  end
+
+  def update_version_file(repo, version)
+    full_file_name = ReposPath.join(repo, "lib/#{repo.gsub('-','/')}/version.rb")
+    full_file_name.write(full_file_name.read.gsub(/(STRING = ['"])(.*)(['"])/, "STRING = '#{version}'"))
   end
 
   def run_if_exists(script_file)
