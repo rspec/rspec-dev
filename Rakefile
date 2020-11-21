@@ -179,10 +179,20 @@ namespace :git do
     force_update(branch, nil)
   end
 
-  { :show => nil, :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
+  { :show => nil, :status => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
       run_command "git #{command} #{options}".strip
+    end
+  end
+
+  desc 'git push on all the repos'
+  task :push, :force do |t, args|
+    branch = `git rev-parse --abbrev-ref HEAD`
+    if args[:force]
+      run_command "git push origin #{branch} --force-with-lease"
+    else
+      run_command "git push origin #{branch}"
     end
   end
 
