@@ -10,6 +10,7 @@ Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-r
 UnDocumentedProjects = %w[ rspec rspec-support ]
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
+MAX_PROJECT_NAME_LENGTH = Projects.map(&:length).max
 
 def run_command(command, opts={})
   projects = if opts[:except]
@@ -35,17 +36,25 @@ def run_command(command, opts={})
   end
 end
 
+def announce(project)
+  puts "="*50
+  puts "# #{project}"
+  puts "-"*40
+end
+
 def each_project(options = {})
-  projects = Projects
+  projects = options.fetch(:only, Projects)
   projects -= Array(options[:except])
 
   projects.each do |project|
     Dir.chdir("repos/#{project}") do
-      puts "="*50
-      puts "# #{project}"
-      puts "-"*40
-      yield project
-      puts
+      if options[:silent]
+        yield project
+      else
+        announce(project)
+        yield project
+        puts
+      end
     end
   end
 end
@@ -63,14 +72,30 @@ desc "Updates the rspec.github.io docs"
 task :update_docs, [:version, :branch, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
-  each_project :except => (UnDocumentedProjects) do |project|
-    latest_release = `git fetch --tags && git tag | grep '^v\\\d.\\\d.\\\d$' | grep v#{args[:version]} | tail -1`
+
+  projects = {}
+  skipped = []
+
+  $stdout.write "Checking versions..."
+
+  each_project :silent => true, :except => (UnDocumentedProjects) do |project|
+    $stdout.write "\rChecking versions... #{project}"
+    latest_release = `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
 
     if latest_release.empty?
-      next "No release found for #{args[:version]} in #{`pwd`}"
+      skipped << project
+    else
+      projects[project] = latest_release
     end
+    $stdout.write "\rChecking versions... " + (" " * MAX_PROJECT_NAME_LENGTH)
+  end
 
-    `git checkout #{latest_release}`
+  $stdout.write "\r\n"
+
+  abort "No projects matched #{args[:version]}" if projects.empty?
+
+  each_project(:only => projects.keys) do |project|
+    `git checkout #{projects[project]}`
     doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle update && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
@@ -89,6 +114,8 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
     Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
     Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
   end
+
+  puts "Skipped projects: (#{skipped.join(", ")}) due to no matching version." unless skipped.empty?
 end
 
 namespace :gem do
@@ -176,13 +203,23 @@ namespace :git do
       sh "git add ."
       sh "git ci -m 'Update version to #{version}'"
     end
-    force_update(branch, nil)
+    force_update(branch, nil, false)
   end
 
-  { :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
+  { :show => nil, :status => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
       run_command "git #{command} #{options}".strip
+    end
+  end
+
+  desc 'git push on all the repos'
+  task :push, :force do |t, args|
+    branch = `git rev-parse --abbrev-ref HEAD`
+    if args[:force]
+      run_command "git push origin #{branch} --force-with-lease"
+    else
+      run_command "git push origin #{branch}"
     end
   end
 
@@ -350,9 +387,9 @@ namespace :ci do
   end
 
   desc "Updates the CI files and creates a PR"
-  task :create_pr_with_updates, :custom_pr_comment do |t, args|
+  task :create_pr_with_updates, :custom_pr_comment, :force do |t, args|
     opts = { except: %w[ rspec-rails ] }
-    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], opts)
+    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], args[:force] == "force", opts)
   end
 end
 
@@ -429,8 +466,8 @@ namespace :common_plaintext_files do
   end
 
   desc "Updates the common plaintext files files and creates a PR"
-  task :create_pr_with_updates, :custom_pr_comment do |_t, args|
-    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment])
+  task :create_pr_with_updates, :custom_pr_comment, :force do |_t, args|
+    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment], args[:force] == "force")
   end
 end
 
@@ -521,12 +558,16 @@ def each_project_with_common_build(opts={}, &b)
   each_project(:except => except, &b)
 end
 
-def force_update(branch, custom_pr_comment, opts={})
+def force_update(branch, custom_pr_comment, skip_confirmation=false, opts={})
   each_project_with_common_build(opts) do |name|
     unless system("git push origin #{branch}")
-      puts "Push failed, force? (y/n)"
-      if STDIN.gets.downcase =~ /^y/
-        sh "git push origin +#{branch}"
+      if skip_confirmation
+        sh "git push origin #{branch} --force-with-lease"
+      else
+        puts "Push failed, force? (y/n)"
+        if STDIN.gets.downcase =~ /^y/
+          sh "git push origin +#{branch}"
+        end
       end
       create_pull_request(name, branch, custom_pr_comment) rescue nil
     else
