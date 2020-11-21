@@ -179,7 +179,7 @@ namespace :git do
     force_update(branch, nil)
   end
 
-  { :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
+  { :show => nil, :status => nil, :push => nil, :reset => '--hard', :diff => nil }.each do |command, options|
     desc "git #{command} on all the repos"
     task command => :clone do
       run_command "git #{command} #{options}".strip
