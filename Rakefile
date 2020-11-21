@@ -35,17 +35,25 @@ def run_command(command, opts={})
   end
 end
 
+def announce(project)
+  puts "="*50
+  puts "# #{project}"
+  puts "-"*40
+end
+
 def each_project(options = {})
   projects = options.fetch(:only, Projects)
   projects -= Array(options[:except])
 
   projects.each do |project|
     Dir.chdir("repos/#{project}") do
-      puts "="*50
-      puts "# #{project}"
-      puts "-"*40
-      yield project
-      puts
+      if options[:silent]
+        yield project
+      else
+        announce(project)
+        yield project
+        puts
+      end
     end
   end
 end
