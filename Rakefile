@@ -203,7 +203,7 @@ namespace :git do
       sh "git add ."
       sh "git ci -m 'Update version to #{version}'"
     end
-    force_update(branch, nil)
+    force_update(branch, nil, false)
   end
 
   { :show => nil, :status => nil, :reset => '--hard', :diff => nil }.each do |command, options|
@@ -387,9 +387,9 @@ namespace :ci do
   end
 
   desc "Updates the CI files and creates a PR"
-  task :create_pr_with_updates, :custom_pr_comment do |t, args|
+  task :create_pr_with_updates, :custom_pr_comment, :force do |t, args|
     opts = { except: %w[ rspec-rails ] }
-    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], opts)
+    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], args[:force] == "force", opts)
   end
 end
 
@@ -466,8 +466,8 @@ namespace :common_plaintext_files do
   end
 
   desc "Updates the common plaintext files files and creates a PR"
-  task :create_pr_with_updates, :custom_pr_comment do |_t, args|
-    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment])
+  task :create_pr_with_updates, :custom_pr_comment, :force do |_t, args|
+    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment], args[:force] == "force")
   end
 end
 
@@ -558,12 +558,16 @@ def each_project_with_common_build(opts={}, &b)
   each_project(:except => except, &b)
 end
 
-def force_update(branch, custom_pr_comment, opts={})
+def force_update(branch, custom_pr_comment, skip_confirmation=false, opts={})
   each_project_with_common_build(opts) do |name|
     unless system("git push origin #{branch}")
-      puts "Push failed, force? (y/n)"
-      if STDIN.gets.downcase =~ /^y/
-        sh "git push origin +#{branch}"
+      if skip_confirmation
+        sh "git push origin #{branch} --force-with-lease"
+      else
+        puts "Push failed, force? (y/n)"
+        if STDIN.gets.downcase =~ /^y/
+          sh "git push origin +#{branch}"
+        end
       end
       create_pull_request(name, branch, custom_pr_comment) rescue nil
     else
