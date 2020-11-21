@@ -10,6 +10,7 @@ Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-r
 UnDocumentedProjects = %w[ rspec rspec-support ]
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
+MAX_PROJECT_NAME_LENGTH = Projects.map(&:length).max
 
 def run_command(command, opts={})
   projects = if opts[:except]
@@ -71,14 +72,30 @@ desc "Updates the rspec.github.io docs"
 task :update_docs, [:version, :branch, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
-  each_project :except => (UnDocumentedProjects) do |project|
+
+  projects = {}
+  skipped = []
+
+  $stdout.write "Checking versions..."
+
+  each_project :silent => true, :except => (UnDocumentedProjects) do |project|
+    $stdout.write "\rChecking versions... #{project}"
     latest_release = `git fetch --tags && git tag | grep '^v\\\d.\\\d.\\\d$' | grep v#{args[:version]} | tail -1`
 
     if latest_release.empty?
-      next "No release found for #{args[:version]} in #{`pwd`}"
+      skipped << project
+    else
+      projects[project] = latest_release
     end
+    $stdout.write "\rChecking versions... " + (" " * MAX_PROJECT_NAME_LENGTH)
+  end
 
-    `git checkout #{latest_release}`
+  $stdout.write "\r\n"
+
+  abort "No projects matched #{args[:version]}" if projects.empty?
+
+  each_project(:only => projects.keys) do |project|
+    `git checkout #{projects[project]}`
     doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
     cmd = "bundle update && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
@@ -97,6 +114,8 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
     Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
     Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
   end
+
+  puts "Skipped projects: (#{skipped.join(", ")}) due to no matching version." unless skipped.empty?
 end
 
 namespace :gem do
