@@ -80,7 +80,7 @@ task :update_docs, [:version, :branch, :website_path] do |t, args|
 
   each_project :silent => true, :except => (UnDocumentedProjects) do |project|
     $stdout.write "\rChecking versions... #{project}"
-    latest_release = `git fetch --tags && git tag | grep '^v\\\d.\\\d.\\\d$' | grep v#{args[:version]} | tail -1`
+    latest_release = `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
 
     if latest_release.empty?
       skipped << project
