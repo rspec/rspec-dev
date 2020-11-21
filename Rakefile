@@ -36,7 +36,7 @@ def run_command(command, opts={})
 end
 
 def each_project(options = {})
-  projects = Projects
+  projects = options.fetch(:only, Projects)
   projects -= Array(options[:except])
 
   projects.each do |project|
