@@ -383,7 +383,8 @@ namespace :ci do
 
   desc "Update build files"
   task :update_files do
-    update_ci_files_in_repos
+    opts = { except: %w[ rspec-rails ] }
+    update_ci_files_in_repos(opts)
   end
 
   desc "Updates the CI files and creates a PR"
