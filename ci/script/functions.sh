@@ -82,6 +82,9 @@ function run_spec_suite_for {
       unset BUNDLE_GEMFILE
       bundle_install_flags="--binstubs --standalone --without documentation --path ../bundle"
       travis_retry eval "(unset RUBYOPT; exec bundle install $bundle_install_flags)"
+      if [ $1 == rspec-rails ]; then
+        unset RUBYOPT
+      fi;
       run_specs_and_record_done
       popd
     else
