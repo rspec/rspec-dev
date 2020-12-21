@@ -578,7 +578,8 @@ def force_update(branch, custom_pr_comment, skip_confirmation=false, opts={})
 end
 
 def update_files_in_repos(purpose, suffix='', opts={})
-  branch_name = "update-#{purpose.gsub ' ', '-'}-#{ENV.fetch('BRANCH_DATE',Date.today.iso8601)}-for-#{BASE_BRANCH}"
+  suffix = [BASE_BRANCH, ENV['BRANCH_SUFFIX']].join('-')
+  branch_name = "update-#{purpose.gsub ' ', '-'}-#{ENV.fetch('BRANCH_DATE',Date.today.iso8601)}-for-#{suffix}"
 
   each_project_with_common_build(opts) do |proj|
     assert_clean_git_status(proj)
