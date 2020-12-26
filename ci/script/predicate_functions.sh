@@ -8,6 +8,28 @@ function is_mri {
   fi;
 }
 
+function is_ruby_head {
+  # This checks for the presence of our CI's ruby-head env variable
+  if [ -z ${RUBY_HEAD+x} ]; then
+    return 1
+  else
+    return 0
+  fi;
+}
+
+function supports_cross_build_checks {
+  if is_mri; then
+    # We don't run cross build checks on ruby-head
+    if is_ruby_head; then
+      return 1
+    else
+      return 0
+    fi
+  else
+    return 1
+  fi
+}
+
 function is_jruby {
   if ruby -e "exit(defined?(RUBY_PLATFORM) && RUBY_PLATFORM == 'java')"; then
     # RUBY_ENGINE only returns 'ruby' on MRI.
