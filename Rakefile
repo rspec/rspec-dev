@@ -12,15 +12,26 @@ BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 MAX_PROJECT_NAME_LENGTH = Projects.map(&:length).max
 
+def filter_projects_by_string(string, projects=Projects)
+  selection = string.split(" ")
+  projects.select { |project| selection.include?(project.downcase) }
+end
+
+def select_projects(options={})
+  projects =
+    if only_string = ENV['ONLY']
+      filter_projects_by_string(only_string)
+    else
+      options.fetch(:only, Projects).flatten - Array(options[:except])
+    end
+
+  projects -= filter_projects_by_string(ENV['EXCEPT']) if ENV['EXCEPT']
+
+  projects
+end
+
 def run_command(command, opts={})
-  projects = if opts[:except]
-               Projects - [opts[:except]].flatten
-             elsif opts[:only]
-               [opts[:only]].flatten
-             else
-               Projects
-             end
-  projects.each do |dir|
+  select_projects(opts).each do |dir|
     next if [opts[:except]].flatten.compact.include?(dir)
     path = ReposPath.join(dir)
     FileUtils.cd(path) do
@@ -43,10 +54,7 @@ def announce(project)
 end
 
 def each_project(options = {})
-  projects = options.fetch(:only, Projects)
-  projects -= Array(options[:except])
-
-  projects.each do |project|
+  select_projects(options).each do |project|
     Dir.chdir("repos/#{project}") do
       if options[:silent]
         yield project
