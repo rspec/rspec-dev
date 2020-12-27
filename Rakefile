@@ -416,10 +416,23 @@ namespace :common_plaintext_files do
     file.basename.to_s =~ /ISSUE_TEMPLATE/
   end
 
+  COMMON_PLAINTEXT_EXCLUSIONS =
+    {
+      'rspec' =>
+        %w[BUILD_DETAIL.md.erb CONTRIBUTING.md.erb DEVELOPMENT.md.erb ISSUE_TEMPLATE.md.erb REPORT_TEMPLATE.md],
+      'rspec-rails' => %w[ISSUE_TEMPLATE.md.erb REPORT_TEMPLATE.md]
+    }
+
   def common_plaintext_files_with_comments(project_name)
     plaintext_root = BaseRspecPath.join('common_plaintext_files')
+
+    excluded_files =
+      COMMON_PLAINTEXT_EXCLUSIONS.fetch(project_name, []).map do |filename|
+        File.expand_path(filename, plaintext_root).to_s
+      end
+
     file_names = Pathname.glob(plaintext_root.join('{.[!.],*}*', '{*,.*}')).select do |f|
-      f.file?
+      f.file? && !excluded_files.include?(f.to_s)
     end
 
     file_names.map do |file|
