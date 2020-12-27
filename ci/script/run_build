@@ -25,7 +25,7 @@ if style_and_lint_enforced; then
   fold "rubocop" check_style_and_lint
 fi
 
-if is_mri; then
+if supports_cross_build_checks; then
   fold "one-by-one specs" run_specs_one_by_one
   run_all_spec_suites
 else
