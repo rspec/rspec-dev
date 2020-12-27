@@ -17,12 +17,12 @@ fi
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
     if [ -z "$2" ]; then
-      BRANCH_TO_CLONE="$MAINTENANCE_BRANCH"
+      BRANCH_TO_CLONE="${MAINTENANCE_BRANCH?}";
     else
-      BRANCH_TO_CLONE="$2"
-    fi
+      BRANCH_TO_CLONE="$2";
+    fi;
 
-    travis_retry eval "git clone https://github.com/rspec/$1 --depth 1 --branch $BRANCH_TO_CLONE"
+    travis_retry eval "git clone https://github.com/rspec/$1 --depth 1 --branch ${BRANCH_TO_CLONE?}"
   fi;
 }
 
