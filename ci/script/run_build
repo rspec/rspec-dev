@@ -27,6 +27,7 @@ fi
 
 if supports_cross_build_checks; then
   fold "one-by-one specs" run_specs_one_by_one
+  export NO_COVERAGE=true
   run_all_spec_suites
 else
   echo "Skipping the rest of the build on non-MRI rubies"
