@@ -27,7 +27,7 @@ jobs:
           - 2.3
         env:
           -
-            DIFF_LCS_VERSION: "> 1.4.3"
+            __UNUSED_VARIABLE: "Prevents build error when {matrix.env} is used."
         include:
           - ruby: ruby-head
             env:
