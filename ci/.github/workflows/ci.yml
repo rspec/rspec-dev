@@ -64,6 +64,26 @@ jobs:
       - run: bundle install --binstubs --standalone
       - run: script/run_build
 
+  legacy:
+    name: Legacy Ruby Builds (${{ matrix.container.version }})
+    runs-on: ubuntu-20.04
+    container: ${{ matrix.container.tag }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - version: "2.0"
+            tag: rspec/ci:2.0.0
+          - version: "1.9.3"
+            tag: rspec/ci:1.9.3
+    env:
+      LEGACY_CI: true
+    steps:
+      - uses: actions/checkout@v2
+      - run: script/legacy_setup.sh
+      - run: bundle exec bin/rspec
+      - run: bundle exec bin/cucumber
+
   windows:
     name: Ruby ${{ matrix.ruby }} (Windows)
     runs-on: windows-latest
