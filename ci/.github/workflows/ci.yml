@@ -76,8 +76,11 @@ jobs:
             tag: rspec/ci:2.0.0
           - version: "1.9.3"
             tag: rspec/ci:1.9.3
+          - version: "JRuby 1.7"
+            tag: rspec/ci:jruby-1.7
     env:
       LEGACY_CI: true
+      JRUBY_OPTS: ${{ matrix.container.jruby_opts || '--dev' }}
     steps:
       - uses: actions/checkout@v2
       - run: script/legacy_setup.sh
