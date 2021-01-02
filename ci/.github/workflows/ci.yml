@@ -82,7 +82,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: script/legacy_setup.sh
       - run: bundle exec bin/rspec
-      - run: bundle exec bin/cucumber
+      - run: bundle exec script/cucumber.sh
 
   windows:
     name: Ruby ${{ matrix.ruby }} (Windows)
