@@ -2,7 +2,7 @@
 set -e
 source script/functions.sh
 
-bundle install --standalone --binstubs
+bundle install --standalone --binstubs --without coverage documentation
 
 if [ -x ./bin/rspec ]; then
   echo "RSpec bin detected"
