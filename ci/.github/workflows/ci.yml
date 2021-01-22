@@ -78,6 +78,9 @@ jobs:
             tag: rspec/ci:2.0.0
           - version: "1.9.3"
             tag: rspec/ci:1.9.3
+          - version: "1.9.2"
+            tag: rspec/ci:1.9.2
+            options: "--add-host rubygems.org:151.101.0.70 --add-host api.rubygems.org:151.101.0.70"
           - version: "REE"
             tag: rspec/ci:ree
             options: "--add-host rubygems.org:151.101.0.70 --add-host api.rubygems.org:151.101.0.70"
