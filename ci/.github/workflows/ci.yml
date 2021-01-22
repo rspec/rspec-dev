@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       image: ${{ matrix.container.tag }}
-      options: ${{ matrix.container.options }}
+      options: ${{ matrix.container.options || '--add-host github-complains-if-this-is-empty.com:127.0.0.1' }}
     strategy:
       fail-fast: false
       matrix:
