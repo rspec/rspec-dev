@@ -92,7 +92,7 @@ listed below. If you submit an issue, please include a link to either of:
 ## Load path and rubygems
 
 Not everybody uses rubygems as their package management system. If this
-sounds odd to you, read https://gist.github.com/54177.
+sounds odd to you, read https://gist.github.com/rtomayko/54177.
 
 In light of this fact, these repositories are "require 'rubygems'" free. The
 included Rakefiles use Bundler, which effectively manages all of this for
