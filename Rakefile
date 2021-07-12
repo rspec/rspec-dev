@@ -555,8 +555,13 @@ def assert_clean_git_status(name)
   end
 end
 
-def confirm_branch_name(name)
+def confirm_branch_name(name, opts={})
   return name unless system("git show-branch #{name} > /dev/null 2>&1")
+
+  if opts[:force]
+    `git branch -D #{name}`
+    return name
+  end
 
   puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
   case input = STDIN.gets.downcase
@@ -620,7 +625,7 @@ def update_files_in_repos(purpose, suffix='', opts={})
   end
 
   each_project_with_common_build(opts) do |name|
-    branch_name = confirm_branch_name(branch_name)
+    branch_name = confirm_branch_name(branch_name, opts)
     sh "git checkout -b #{branch_name}"
 
     yield name
