@@ -61,7 +61,8 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - run: script/update_rubygems_and_install_bundler
       - run: script/clone_all_rspec_repos
-      - run: bundle install --binstubs --standalone
+      - run: bundle install --standalone
+      - run: bundle binstubs --all
       - run: script/run_build
 
   legacy:
