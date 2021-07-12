@@ -136,10 +136,7 @@ function check_binstubs {
     echo "  $ bundle binstubs$gems"
     echo
     echo "  # To binstub all gems"
-    echo "  $ bundle install --binstubs"
-    echo
-    echo "  # To binstub all gems and avoid loading bundler"
-    echo "  $ bundle install --binstubs --standalone"
+    echo "  $ bundle binstubs --all"
   fi
 
   return $success
