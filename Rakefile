@@ -224,7 +224,7 @@ namespace :git do
   desc 'git push on all the repos'
   task :push, :force do |t, args|
     branch = `git rev-parse --abbrev-ref HEAD`
-    if args[:force]
+    if should_force?(args)
       run_command "git push origin #{branch} --force-with-lease"
     else
       run_command "git push origin #{branch}"
@@ -396,8 +396,8 @@ namespace :ci do
 
   desc "Updates the CI files and creates a PR"
   task :create_pr_with_updates, :custom_pr_comment, :force do |t, args|
-    opts = { except: %w[ rspec-rails ] }
-    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], args[:force] == "force", opts)
+    opts = { except: %w[ rspec-rails ], force: should_force?(args) }
+    force_update(update_ci_files_in_repos(opts), args[:custom_pr_comment], opts[:force], opts)
   end
 end
 
@@ -488,7 +488,7 @@ namespace :common_plaintext_files do
 
   desc "Updates the common plaintext files files and creates a PR"
   task :create_pr_with_updates, :custom_pr_comment, :force do |_t, args|
-    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment], args[:force] == "force")
+    force_update(update_common_plaintext_files_in_repos, args[:custom_pr_comment], should_force?(args))
   end
 end
 
@@ -555,8 +555,13 @@ def assert_clean_git_status(name)
   end
 end
 
-def confirm_branch_name(name)
+def confirm_branch_name(name, opts={})
   return name unless system("git show-branch #{name} > /dev/null 2>&1")
+
+  if opts[:force]
+    `git branch -D #{name}`
+    return name
+  end
 
   puts "Branch #{name} already exists, delete? [Y/n] or rename new branch? [r[ename] <name>]"
   case input = STDIN.gets.downcase
@@ -598,6 +603,14 @@ def force_update(branch, custom_pr_comment, skip_confirmation=false, opts={})
   end
 end
 
+def should_force?(opts = {})
+  force = opts[:force]
+  %w[force t true].each do |text|
+    return true if force == text || ENV['FORCE'] == text
+  end
+  return false
+end
+
 def update_files_in_repos(purpose, suffix='', opts={})
   suffix = [BASE_BRANCH, ENV['BRANCH_SUFFIX']].compact.join('-')
   branch_name = "update-#{purpose.gsub ' ', '-'}-#{ENV.fetch('BRANCH_DATE',Date.today.iso8601)}-for-#{suffix}"
@@ -612,7 +625,7 @@ def update_files_in_repos(purpose, suffix='', opts={})
   end
 
   each_project_with_common_build(opts) do |name|
-    branch_name = confirm_branch_name(branch_name)
+    branch_name = confirm_branch_name(branch_name, opts)
     sh "git checkout -b #{branch_name}"
 
     yield name
