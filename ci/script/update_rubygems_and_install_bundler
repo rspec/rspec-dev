@@ -3,8 +3,8 @@ set -e
 source script/functions.sh
 
 if is_ruby_23_plus; then
-  yes | gem update --system
-  yes | gem install bundler
+  yes | gem update --system '3.2.22'
+  yes | gem install bundler -v '2.2.22'
 else
   echo "Warning installing older versions of Rubygems / Bundler"
   gem update --system '2.7.8'
