@@ -2,7 +2,12 @@
 set -e
 source script/functions.sh
 
-if is_ruby_23_plus; then
+if is_ruby_31_plus; then
+  echo "Installing rubygems 3.3.6 / bundler 2.3.6"
+  yes | gem update --system '3.3.6'
+  yes | gem install bundler -v '2.3.6'
+elif is_ruby_23_plus; then
+  echo "Installing rubygems 3.2.22 / bundler 2.2.22"
   yes | gem update --system '3.2.22'
   yes | gem install bundler -v '2.2.22'
 else
