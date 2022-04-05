@@ -189,6 +189,9 @@ function run_all_spec_suites {
   fold "rspec-expectations specs" run_spec_suite_for "rspec-expectations"
   fold "rspec-mocks specs" run_spec_suite_for "rspec-mocks"
   if rspec_rails_compatible; then
+    if ! is_ruby_27_plus; then
+      export RAILS_VERSION='~> 6.1.0'
+    fi
     fold "rspec-rails specs" run_spec_suite_for "rspec-rails"
   fi
 
