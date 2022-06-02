@@ -6,7 +6,7 @@ require 'time'
 require 'date'
 require 'erb'
 
-Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
+Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-support']
 UnDocumentedProjects = %w[ rspec rspec-support ]
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
