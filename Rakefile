@@ -225,7 +225,7 @@ namespace :git do
   task :push, :force do |t, args|
     branch = `git rev-parse --abbrev-ref HEAD`
     if should_force?(args)
-      run_command "git push origin #{branch} --force-with-lease"
+      run_command "git push origin #{branch} --force"
     else
       run_command "git push origin #{branch}"
     end
