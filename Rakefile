@@ -631,7 +631,7 @@ def update_files_in_repos(purpose, suffix='', opts={})
     yield name
 
     sh "git add ."
-    sh "git commit -m 'Updated #{purpose} (from rspec-dev)#{suffix}'"
+    sh "git commit -m 'Updated #{purpose} (from rspec-dev) #{suffix}'"
   end
 
   branch_name
