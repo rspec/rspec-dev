@@ -44,7 +44,7 @@ jobs:
           - 2.3
         env:
           -
-            __UNUSED_VARIABLE: "Prevents build error when {matrix.env} is used."
+            RAILS_VERSION: '~> 6.1.0'
         include:
           - ruby: ruby-head
             env:
