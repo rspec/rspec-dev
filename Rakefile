@@ -558,7 +558,7 @@ end
 def confirm_branch_name(name, opts={})
   return name unless system("git show-branch #{name} > /dev/null 2>&1")
 
-  if opts[:force]
+  if should_force?(opts)
     `git branch -D #{name}`
     return name
   end
@@ -588,7 +588,7 @@ def force_update(branch, custom_pr_comment, skip_confirmation=false, opts={})
   each_project_with_common_build(opts) do |name|
     unless system("git push origin #{branch}")
       if skip_confirmation
-        sh "git push origin #{branch} --force-with-lease"
+        sh "git push origin #{branch} --force"
       else
         puts "Push failed, force? (y/n)"
         if STDIN.gets.downcase =~ /^y/
@@ -605,7 +605,7 @@ end
 
 def should_force?(opts = {})
   force = opts[:force]
-  %w[force t true].each do |text|
+  %w[force t true yes].each do |text|
     return true if force == text || ENV['FORCE'] == text
   end
   return false
