@@ -81,6 +81,10 @@ task :update_docs, [:version, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
 
+  output_directory = File.expand_path(args[:website_path])
+
+  abort "No output directory #{output_directory}" unless Dir.exist?(output_directory)
+
   projects = {}
   skipped = []
 
@@ -104,7 +108,8 @@ task :update_docs, [:version, :website_path] do |t, args|
 
   each_project(:only => projects.keys) do |project|
     `git checkout #{projects[project]}`
-    doc_destination_path = "#{args[:website_path]}/source/documentation/#{args[:version]}/#{project}/"
+    doc_destination_path = "#{output_directory}/source/documentation/#{args[:version]}/#{project}/"
+    FileUtils.mkdir_p doc_destination_path
     cmd = "bundle update && \
            RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
                             --yardopts .yardopts \
