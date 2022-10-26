@@ -77,7 +77,7 @@ task :run, :command do |t, args|
 end
 
 desc "Updates the rspec.github.io docs"
-task :update_docs, [:version, :branch, :website_path] do |t, args|
+task :update_docs, [:version, :website_path] do |t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
 
