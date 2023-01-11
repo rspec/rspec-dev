@@ -10,6 +10,9 @@ on:
       - '*'
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 env:
   RSPEC_CI: true
   # This tells rspec-rails what branch to run in ci
