@@ -751,7 +751,7 @@ def should_force?(opts = {})
 end
 
 def update_files_in_repos(purpose, suffix='', opts={})
-  suffix = [BASE_BRANCH, ENV['BRANCH_SUFFIX']].compact.join('-')
+  suffix = [BASE_BRANCH, ENV['BRANCH_SUFFIX']].compact.join('-').sub(/-maintenance$/, '')
   branch_name = "update-#{purpose.gsub ' ', '-'}-#{ENV.fetch('BRANCH_DATE',Date.today.iso8601)}-for-#{suffix}"
 
   each_project_with_common_build(opts) do |proj|
