@@ -19,7 +19,7 @@ end
 
 def select_projects(options={})
   projects =
-    if only_string = ENV['ONLY']
+    if (only_string = ENV['ONLY'])
       filter_projects_by_string(only_string)
     else
       options.fetch(:only, Projects).flatten - Array(options[:except])
@@ -72,12 +72,12 @@ task :make_repos_directory do
 end
 
 desc "run an arbitrary command against all repos"
-task :run, :command do |t, args|
+task :run, :command do |_t, args|
   run_command args[:command]
 end
 
 desc "Updates the rspec.github.io docs"
-task :update_docs, [:version, :website_path] do |t, args|
+task :update_docs, [:version, :website_path] do |_t, args|
   abort "You must have ag installed to generate docs" if `which ag` == ""
   args.with_defaults(:website_path => "../rspec.github.io")
 
