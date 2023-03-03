@@ -92,7 +92,7 @@ task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
 
-desc "run an arbitrary command against all repos"
+desc 'run an arbitrary command against all repos'
 task :run, :command do |_t, args|
   run_command args[:command]
 end
@@ -125,7 +125,7 @@ task :update_docs, [:version, :website_path] do |_t, args|
     else
       projects[project] = latest_release
     end
-    $stdout.write "\rChecking versions... " + (" " * MAX_PROJECT_NAME_LENGTH)
+    $stdout.write "\rChecking versions... #{' ' * MAX_PROJECT_NAME_LENGTH}"
   end
 
   $stdout.write "\r\n"
