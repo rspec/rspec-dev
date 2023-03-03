@@ -113,7 +113,12 @@ task :update_docs, [:version, :website_path] do |_t, args|
 
   each_project :silent => true, :except => (UnDocumentedProjects) do |project|
     $stdout.write "\rChecking versions... #{project}"
-    latest_release = `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
+    latest_release =
+      if args[:version] =~ /maintenance$/
+        args[:version]
+      else
+        `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
+      end
 
     if latest_release.empty?
       skipped << project
@@ -129,6 +134,15 @@ task :update_docs, [:version, :website_path] do |_t, args|
 
   each_project(:only => projects.keys) do |project|
     `git checkout #{projects[project]}`
+
+    (_major, _minor, *_patch) =
+      case args[:version]
+      when /^\d+\.\d+/ then args[:version].split('.')
+      when /^\d+-\d+-maintenance/ then args[:version].split('-')
+      else
+        raise ArgumentError, "Unexpected version #{args[:version]}, expected either `x.x` or `x-x-maintenance`"
+      end
+
     if ENV.fetch('NO_RDOC', '').empty?
       rdoc_for_project(project, args, "#{output_directory}/source/documentation/#{args.fetch(:version, '')}/#{project}/")
     end
