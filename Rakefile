@@ -67,6 +67,27 @@ def each_project(options = {})
   end
 end
 
+def rdoc_for_project(project, args, doc_destination_path)
+  FileUtils.mkdir_p doc_destination_path
+  cmd = "bundle update && \
+         RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
+                          --yardopts .yardopts \
+                          --output-dir #{doc_destination_path}"
+  puts cmd
+  Bundler.unbundled_system(cmd)
+
+  in_place =
+    if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
+      "-i ''"
+    else
+      "-i''"
+    end
+
+  Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
+  Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
+  Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
+end
+
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
@@ -108,24 +129,9 @@ task :update_docs, [:version, :website_path] do |_t, args|
 
   each_project(:only => projects.keys) do |project|
     `git checkout #{projects[project]}`
-    doc_destination_path = "#{output_directory}/source/documentation/#{args[:version]}/#{project}/"
-    FileUtils.mkdir_p doc_destination_path
-    cmd = "bundle update && \
-           RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
-                            --yardopts .yardopts \
-                            --output-dir #{doc_destination_path}"
-    puts cmd
-    Bundler.unbundled_system(cmd)
-    in_place =
-      if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
-        "-i ''"
-      else
-        "-i''"
-      end
-
-    Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
-    Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
-    Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
+    if ENV.fetch('NO_RDOC', '').empty?
+      rdoc_for_project(project, args, "#{output_directory}/source/documentation/#{args.fetch(:version, '')}/#{project}/")
+    end
   end
 
   puts "Skipped projects: (#{skipped.join(", ")}) due to no matching version." unless skipped.empty?
