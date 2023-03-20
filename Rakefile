@@ -67,11 +67,148 @@ def each_project(options = {})
   end
 end
 
+def rdoc_for_project(project, args, doc_destination_path)
+  FileUtils.mkdir_p doc_destination_path
+  cmd = "bundle update && \
+         RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
+                          --yardopts .yardopts \
+                          --output-dir #{doc_destination_path}"
+  puts cmd
+  Bundler.unbundled_system(cmd)
+
+  in_place =
+    if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
+      "-i ''"
+    else
+      "-i''"
+    end
+
+  Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
+  Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
+  Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
+end
+
+def html_filename(filename)
+  filename.gsub(/^\/?features/, '').gsub('_', '-').gsub('README', 'index').gsub(/\.(feature|md)$/, '.html.md')
+end
+
+def cucumber_doc_for_project(project, _args, doc_destination_path)
+  if `which gherkin2markdown`.empty?
+    abort <<-MSG
+    Creating cucumber documentation requires the gherkin2makrdown tool:
+    - Install go using your preferred run time (tested with asdf and golang 1.20)
+    - Then run:
+      ```
+      go install github.com/raviqqe/gherkin2markdown@latest
+      ```
+      OR surpress this message by running with NO_CUCUMBER=true
+    MSG
+  end
+  FileUtils.mkdir_p doc_destination_path
+
+  features = Dir['features/**/*feature']
+  markdown = Dir['features/**/*md']
+
+  # Convert features to markdown files in the website with - based filenames
+  features.each do |file|
+    dest_file = File.join(doc_destination_path, html_filename(file))
+    FileUtils.mkdir_p File.dirname(dest_file)
+    Bundler.unbundled_system "gherkin2markdown #{file} > #{dest_file}"
+
+    result = File.read(dest_file)
+    table_regexp = /^\s*\|.*\|$/
+    table_header_regexp = /^\s*\|-+(\|-+)*\|\s*$/
+
+    # If no table skip the table generation
+    next unless result =~ table_regexp
+
+    lines = result.split("\n")
+
+    # Find all a files tables
+    tables =
+      lines.each.with_index.reduce([]) do |table_ranges, (line, index)|
+        if line =~ table_regexp
+          (table_start, table_end) = table_ranges.pop
+
+          if table_end == index - 1
+            # then this is our table
+            table_ranges << [table_start, index]
+          else
+            # this is a new table
+            table_ranges << [table_start, table_end] unless table_start.nil? && table_end.nil?
+            table_ranges << [index, index]
+          end
+        else
+          table_ranges
+        end
+      end
+
+    File.open(dest_file, 'w') do |tableised_file|
+      written_end =
+        tables.reduce(0) do |last_index, (table_start, table_end)|
+          # Write file before the table
+          tableised_file.write lines[last_index...table_start].join("\n")
+          tableised_file.write "\n"
+
+          # Calculate the header
+          (spacing, contents,) = lines[table_start].split('|', 2)
+          table_width = contents.length - 1
+          table_header = "|#{' ' * table_width}|\n|#{'-' * table_width}|\n"
+
+          # If the header is missing for this table write the header
+          tableised_file.write table_header unless lines[table_start + 1] =~ table_header_regexp
+
+          # Write the rest of the table
+          lines[table_start..table_end].each do |line|
+            tableised_file.write line.gsub(/^#{spacing}/, '')
+            tableised_file.write "\n"
+          end
+
+          # next index is last of the table plus one
+          table_end + 1
+        end
+
+      # Write any remaining file
+      if written_end < lines.length
+        tableised_file.write lines[written_end..].join("\n")
+        tableised_file.write "\n"
+      end
+    end
+  end
+
+  # Copy markdown files in the website with - based filenames
+  markdown.each do |file|
+    dest_file = File.join(doc_destination_path, html_filename(file))
+    FileUtils.mkdir_p File.dirname(dest_file)
+    Bundler.unbundled_system "cp #{file} #{dest_file}"
+  end
+
+  # For all folders check we have an index.html and add the front matter required
+  (features + markdown).each do |filename|
+    file_in_dest = File.join(doc_destination_path, html_filename(filename))
+    file_we_care_about = File.join(File.dirname(file_in_dest), 'index.html.md')
+
+    front_matter = %Q(---\nlayout: "feature_index"\n---\n\n)
+
+    next if file_we_care_about =~ /#{project}\/index\.html\.md$/
+
+    if File.exist?(file_we_care_about)
+      contents = File.read(file_we_care_about)
+      File.write(file_we_care_about, front_matter + contents) unless contents.include?(front_matter)
+    else
+      File.write(file_we_care_about, front_matter)
+    end
+  end
+
+  # Copy .nav file to the project with the filenames converted to hyphens
+  File.write("#{doc_destination_path}.nav", File.read('features/.nav').gsub('_', '-'))
+end
+
 task :make_repos_directory do
   FileUtils.mkdir_p ReposPath
 end
 
-desc "run an arbitrary command against all repos"
+desc 'run an arbitrary command against all repos'
 task :run, :command do |_t, args|
   run_command args[:command]
 end
@@ -92,14 +229,19 @@ task :update_docs, [:version, :website_path] do |_t, args|
 
   each_project :silent => true, :except => (UnDocumentedProjects) do |project|
     $stdout.write "\rChecking versions... #{project}"
-    latest_release = `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
+    latest_release =
+      if args[:version] =~ /maintenance$/
+        args[:version]
+      else
+        `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
+      end
 
     if latest_release.empty?
       skipped << project
     else
       projects[project] = latest_release
     end
-    $stdout.write "\rChecking versions... " + (" " * MAX_PROJECT_NAME_LENGTH)
+    $stdout.write "\rChecking versions... #{' ' * MAX_PROJECT_NAME_LENGTH}"
   end
 
   $stdout.write "\r\n"
@@ -108,24 +250,22 @@ task :update_docs, [:version, :website_path] do |_t, args|
 
   each_project(:only => projects.keys) do |project|
     `git checkout #{projects[project]}`
-    doc_destination_path = "#{output_directory}/source/documentation/#{args[:version]}/#{project}/"
-    FileUtils.mkdir_p doc_destination_path
-    cmd = "bundle update && \
-           RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
-                            --yardopts .yardopts \
-                            --output-dir #{doc_destination_path}"
-    puts cmd
-    Bundler.unbundled_system(cmd)
-    in_place =
-      if RUBY_PLATFORM =~ /darwin/ # if this is os x then we must modify sed
-        "-i ''"
+
+    (major, minor, *_patch) =
+      case args[:version]
+      when /^\d+\.\d+/ then args[:version].split('.')
+      when /^\d+-\d+-maintenance/ then args[:version].split('-')
       else
-        "-i''"
+        raise ArgumentError, "Unexpected version #{args[:version]}, expected either `x.x` or `x-x-maintenance`"
       end
 
-    Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
-    Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
-    Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
+    if ENV.fetch('NO_RDOC', '').empty?
+      rdoc_for_project(project, args, "#{output_directory}/source/documentation/#{args.fetch(:version, '')}/#{project}/")
+    end
+
+    if ENV.fetch('NO_CUCUMBER', '').empty?
+      cucumber_doc_for_project(project, args, "#{output_directory}/source/features/#{major}-#{minor}/#{project}/")
+    end
   end
 
   puts "Skipped projects: (#{skipped.join(", ")}) due to no matching version." unless skipped.empty?
