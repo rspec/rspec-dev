@@ -503,12 +503,6 @@ task :default do
   run_command "bin/rake"
 end
 
-desc "publish cukes to relishapp.com"
-task :relish, :version do |_, args|
-  raise "rake relish[VERSION]" unless args[:version]
-  run_command "bin/rake relish['#{args[:version]}']", :except => ['rspec']
-end
-
 desc "generate release notes from changelogs"
 task :release_notes, :target do |_, args|
 
