@@ -1,6 +1,6 @@
 # Taken from:
 # https://github.com/travis-ci/travis-build/blob/e9314616e182a23e6a280199cd9070bfc7cae548/lib/travis/build/script/templates/header.sh#L34-L53
-travis_retry() {
+ci_retry() {
   local result=0
   local count=1
   while [ $count -le 3 ]; do
