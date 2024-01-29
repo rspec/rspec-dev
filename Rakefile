@@ -6,8 +6,8 @@ require 'time'
 require 'date'
 require 'erb'
 
-Projects = ['rspec', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
-UnDocumentedProjects = %w[ rspec rspec-support ]
+Projects = ['rspec-metagem', 'rspec-core', 'rspec-expectations', 'rspec-mocks', 'rspec-rails', 'rspec-support']
+UnDocumentedProjects = %w[ rspec-metagem rspec-support ]
 BaseRspecPath = Pathname.new(Dir.pwd)
 ReposPath = BaseRspecPath.join('repos')
 MAX_PROJECT_NAME_LENGTH = Projects.map(&:length).max
@@ -563,7 +563,7 @@ namespace :common_plaintext_files do
 
   COMMON_PLAINTEXT_EXCLUSIONS =
     {
-      'rspec' =>
+      'rspec-metagem' =>
         %w[BUILD_DETAIL.md.erb CONTRIBUTING.md.erb DEVELOPMENT.md.erb ISSUE_TEMPLATE.md.erb REPORT_TEMPLATE.md],
       'rspec-rails' => %w[ISSUE_TEMPLATE.md.erb REPORT_TEMPLATE.md]
     }
@@ -671,7 +671,7 @@ end
 
 desc "Lists stats generated from the logs for the provided commit ranges"
 task :version_stats, :commit_ranges do |t, args|
-  projects = Projects - ["rspec"]
+  projects = Projects - ["rspec-metagem"]
 
   puts
   puts "### Combined: "
@@ -717,7 +717,7 @@ def confirm_branch_name(name, opts={})
 end
 
 def each_project_with_common_build(opts={}, &b)
-  except = %w[ rspec ]
+  except = %w[ rspec-metagem ]
   except += Array(opts[:except])
   except << "rspec-support" if BASE_BRANCH_MAJOR_VERSION < 3
   each_project(:except => except, &b)

@@ -61,9 +61,8 @@ like this:
 After the initial clone you can run `rake git:pull` from the rspec-dev
 directory to update all of the rspec repos (in repos). Note that the update script 
 will look for the repos all under the same user as rspec-dev, so if you have forked this repo, 
-you need to fork them all. The rspec metagem is now available [here](https://github.com/rspec/rspec-metagem)
-and you will need to rename your fork rspec,
-
+you need to fork them all.
+ 
 Run `rake -T` to see the available tasks for dev mode.
 
 # Contributing
