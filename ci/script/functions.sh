@@ -3,7 +3,6 @@ source $SCRIPT_DIR/ci_functions.sh
 source $SCRIPT_DIR/predicate_functions.sh
 
 # If JRUBY_OPTS isn't set, use these.
-# see https://docs.travis-ci.com/user/ci-environment/
 export JRUBY_OPTS=${JRUBY_OPTS:-"--server -Xcompile.invokedynamic=false"}
 SPECS_HAVE_RUN_FILE=specs.out
 MAINTENANCE_BRANCH=`cat maintenance-branch`

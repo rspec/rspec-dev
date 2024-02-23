@@ -526,12 +526,10 @@ namespace :ci do
   end
 
   def around_update_ci_build
-    run_if_exists './script/before_update_travis_build.sh'
     run_if_exists './script/before_update_build.sh'
     yield if block_given?
   ensure
     run_if_exists './script/after_update_build.sh'
-    run_if_exists './script/after_update_travis_build.sh'
   end
 
   desc "Update build files"
