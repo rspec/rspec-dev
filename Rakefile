@@ -213,10 +213,10 @@ task :run, :command do |_t, args|
   run_command args[:command]
 end
 
-desc "Updates the rspec.github.io docs"
+desc 'Updates the rspec.github.io docs'
 task :update_docs, [:version, :website_path] do |_t, args|
-  abort "You must have ag installed to generate docs" if `which ag` == ""
-  args.with_defaults(:website_path => "../rspec.github.io")
+  abort 'You must have ag installed to generate docs' if `which ag` == ''
+  args.with_defaults(:website_path => '../rspec.github.io')
 
   output_directory = File.expand_path(args[:website_path])
 
@@ -225,9 +225,9 @@ task :update_docs, [:version, :website_path] do |_t, args|
   projects = {}
   skipped = []
 
-  $stdout.write "Checking versions..."
+  $stdout.write 'Checking versions...'
 
-  each_project :silent => true, :except => (UnDocumentedProjects) do |project|
+  each_project :silent => true, :except => UnDocumentedProjects do |project|
     $stdout.write "\rChecking versions... #{project}"
     latest_release =
       if args[:version] =~ /maintenance$/
