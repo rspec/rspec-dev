@@ -214,7 +214,7 @@ task :run, :command do |_t, args|
 end
 
 desc 'Updates the rspec.github.io docs'
-task :update_docs, [:version, :website_path] do |_t, args|
+task :update_docs, [:version, :website_path, :branch] do |_t, args|
   abort 'You must have ag installed to generate docs' if `which ag` == ''
   args.with_defaults(:website_path => '../rspec.github.io')
 
@@ -236,10 +236,12 @@ task :update_docs, [:version, :website_path] do |_t, args|
         `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
       end
 
-    if latest_release.empty?
+    if args[:branch].empty? && latest_release.empty?
       skipped << project
-    else
+    elsif args[:branch].empty?
       projects[project] = latest_release
+    else
+      projects[project] = args[:branch]
     end
     $stdout.write "\rChecking versions... #{' ' * MAX_PROJECT_NAME_LENGTH}"
   end
