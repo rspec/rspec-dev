@@ -213,10 +213,10 @@ task :run, :command do |_t, args|
   run_command args[:command]
 end
 
-desc "Updates the rspec.github.io docs"
-task :update_docs, [:version, :website_path] do |_t, args|
-  abort "You must have ag installed to generate docs" if `which ag` == ""
-  args.with_defaults(:website_path => "../rspec.github.io")
+desc 'Updates the rspec.github.io docs'
+task :update_docs, [:version, :website_path, :branch] do |_t, args|
+  abort 'You must have ag installed to generate docs' if `which ag` == ''
+  args.with_defaults(:website_path => '../rspec.github.io')
 
   output_directory = File.expand_path(args[:website_path])
 
@@ -225,9 +225,9 @@ task :update_docs, [:version, :website_path] do |_t, args|
   projects = {}
   skipped = []
 
-  $stdout.write "Checking versions..."
+  $stdout.write 'Checking versions...'
 
-  each_project :silent => true, :except => (UnDocumentedProjects) do |project|
+  each_project :silent => true, :except => UnDocumentedProjects do |project|
     $stdout.write "\rChecking versions... #{project}"
     latest_release =
       if args[:version] =~ /maintenance$/
@@ -236,10 +236,12 @@ task :update_docs, [:version, :website_path] do |_t, args|
         `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
       end
 
-    if latest_release.empty?
+    if args[:branch].empty? && latest_release.empty?
       skipped << project
-    else
+    elsif args[:branch].empty?
       projects[project] = latest_release
+    else
+      projects[project] = args[:branch]
     end
     $stdout.write "\rChecking versions... #{' ' * MAX_PROJECT_NAME_LENGTH}"
   end
@@ -526,12 +528,10 @@ namespace :ci do
   end
 
   def around_update_ci_build
-    run_if_exists './script/before_update_travis_build.sh'
     run_if_exists './script/before_update_build.sh'
     yield if block_given?
   ensure
     run_if_exists './script/after_update_build.sh'
-    run_if_exists './script/after_update_travis_build.sh'
   end
 
   desc "Update build files"
