@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem "rspec", path: File.expand_path("../../repos/rspec", __FILE__)
+gem "rspec-core", path: File.expand_path("../../repos/rspec-core", __FILE__)
+gem "rspec-mocks", path: File.expand_path("../../repos/rspec-mocks", __FILE__)
+gem "rspec-expectations", path: File.expand_path("../../repos/rspec-expectations", __FILE__)
+gem "rspec-support", path: File.expand_path("../../repos/rspec-support", __FILE__)
+
