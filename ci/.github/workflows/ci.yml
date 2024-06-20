@@ -127,6 +127,7 @@ jobs:
     env:
       LEGACY_CI: true
       JRUBY_OPTS: ${{ matrix.container.jruby_opts || '--dev' }}
+      NO_COVERAGE: true
     steps:
       - uses: actions/checkout@v3
       - run: ${{ matrix.container.pre }}
