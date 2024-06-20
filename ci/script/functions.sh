@@ -3,7 +3,6 @@ source $SCRIPT_DIR/ci_functions.sh
 source $SCRIPT_DIR/predicate_functions.sh
 
 # If JRUBY_OPTS isn't set, use these.
-# see https://docs.travis-ci.com/user/ci-environment/
 export JRUBY_OPTS=${JRUBY_OPTS:-"--server -Xcompile.invokedynamic=false"}
 SPECS_HAVE_RUN_FILE=specs.out
 MAINTENANCE_BRANCH=`cat maintenance-branch`
@@ -17,12 +16,18 @@ fi
 function clone_repo {
   if [ ! -d $1 ]; then # don't clone if the dir is already there
     if [ -z "$2" ]; then
+      DIR_TARGET="$1"
+    else
+      DIR_TARGET="$2"
+    fi
+
+    if [ -z "$3" ]; then
       BRANCH_TO_CLONE="${MAINTENANCE_BRANCH?}";
     else
-      BRANCH_TO_CLONE="$2";
+      BRANCH_TO_CLONE="$3";
     fi;
 
-    ci_retry eval "git clone https://github.com/rspec/$1 --depth 1 --branch ${BRANCH_TO_CLONE?}"
+    ci_retry eval "git clone https://github.com/rspec/$1 --depth 1 --branch ${BRANCH_TO_CLONE?} ${DIR_TARGET?}"
   fi;
 }
 
