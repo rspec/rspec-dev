@@ -9,6 +9,7 @@ rspec-rails.
 
     git
     sqlite3 # for rspec-rails
+    the_silver_searcher # for update_docs
 
 ### Ruby
 
@@ -58,8 +59,10 @@ like this:
         rspec              # meta-gem that depends on core, expectations, and mocks
 
 After the initial clone you can run `rake git:pull` from the rspec-dev
-directory to update all of the rspec repos (in repos).
-
+directory to update all of the rspec repos (in repos). Note that the update script 
+will look for the repos on github from the same source as rspec-dev, so if you have forked
+this repo and have that set to origin, you will need to fork them all.
+ 
 Run `rake -T` to see the available tasks for dev mode.
 
 # Contributing
