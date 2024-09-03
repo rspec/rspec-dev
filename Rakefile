@@ -236,9 +236,9 @@ task :update_docs, [:version, :website_path, :branch] do |_t, args|
         `git fetch --tags && git tag -l "v#{args[:version]}*" | grep v#{args[:version]} | tail -1`
       end
 
-    if args[:branch].empty? && latest_release.empty?
+    if (args[:branch].nil? || args[:branch].empty?) && latest_release.empty?
       skipped << project
-    elsif args[:branch].empty?
+    elsif args[:branch].nil? || args[:branch].empty?
       projects[project] = latest_release
     else
       projects[project] = args[:branch]
