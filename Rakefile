@@ -275,7 +275,7 @@ task :update_docs, [:version, :website_path, :branch] do |_t, args|
       end
 
     if ENV.fetch('NO_RDOC', '').empty?
-      rdoc_for_project(output_directory: output_directory, project_path: File.join(%W[documentation #{major}.#{minor} #{project}]))
+      rdoc_for_project(output_directory: output_directory, project_path: File.join(%W[/documentation #{major}.#{minor} #{project}/]))
     end
 
     if ENV.fetch('NO_CUCUMBER', '').empty?
