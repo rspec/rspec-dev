@@ -67,10 +67,13 @@ def each_project(options = {})
   end
 end
 
-def rdoc_for_project(project, args, doc_destination_path)
+def rdoc_for_project(output_directory:, project_path:)
+  source_path = output_directory.join('source')
+  doc_destination_path = source_path + project_path.gsub(/^\//, '')
+
   FileUtils.mkdir_p doc_destination_path
   cmd = "bundle update && \
-         RUBYOPT='-I#{args[:website_path]}/lib' bundle exec yard \
+         RUBYOPT='-I#{output_directory}/lib' bundle exec yard \
                           --yardopts .yardopts \
                           --output-dir #{doc_destination_path}"
   puts cmd
@@ -83,9 +86,20 @@ def rdoc_for_project(project, args, doc_destination_path)
       "-i''"
     end
 
-  Bundler.unbundled_system %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | xargs -I{} sed #{in_place} 's/src="\\\(..\\\/\\\)*js/src="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/js/' {}}
-  Bundler.unbundled_system %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | xargs -I{} sed #{in_place} 's/href="\\\(..\\\/\\\)*css/href="\\\/documentation\\\/#{args[:version]}\\\/#{project}\\\/css/' {}}
-  Bundler.unbundled_system %Q{ag --html -l . #{doc_destination_path} | xargs -I{} sed #{in_place} /^[[:space:]]*$/d {}}
+  sed = "xargs -I{} sed #{in_place}"
+  asset_path = project_path.gsub('/', "\\\/")
+
+  unless asset_path.start_with?("\\\/") && asset_path.end_with?("\\\/")
+    raise "Unexpected asset path, requires leading and trailing / #{asset_path.inspect}"
+  end
+
+  Bundler.unbundled_system(
+    %Q{ag -l src=\\"\\\(?:..\/\\\)*js #{doc_destination_path} | #{sed} 's/src="\\\(..\\\/\\\)*js/src="#{asset_path}js/' {}}
+  )
+  Bundler.unbundled_system(
+    %Q{ag -l href=\\"\\\(?:..\/\\\)*css #{doc_destination_path} | #{sed} 's/href="\\\(..\\\/\\\)*css/href="#{asset_path}css/' {}}
+  )
+  Bundler.unbundled_system "ag --html -l . #{doc_destination_path} | #{sed} /^[[:space:]]*$/d {}"
 end
 
 def html_filename(filename)
@@ -218,7 +232,7 @@ task :update_docs, [:version, :website_path, :branch] do |_t, args|
   abort 'You must have ag installed to generate docs' if `which ag` == ''
   args.with_defaults(:website_path => '../rspec.github.io')
 
-  output_directory = File.expand_path(args[:website_path])
+  output_directory = Pathname.new(File.expand_path(args[:website_path]))
 
   abort "No output directory #{output_directory}" unless Dir.exist?(output_directory)
 
@@ -262,7 +276,7 @@ task :update_docs, [:version, :website_path, :branch] do |_t, args|
       end
 
     if ENV.fetch('NO_RDOC', '').empty?
-      rdoc_for_project(project, args, "#{output_directory}/source/documentation/#{args.fetch(:version, '')}/#{project}/")
+      rdoc_for_project(output_directory: output_directory, project_path: "/documentation/#{major}.#{minor}/#{project}/")
     end
 
     if ENV.fetch('NO_CUCUMBER', '').empty?
