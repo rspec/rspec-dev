@@ -68,8 +68,7 @@ def each_project(options = {})
 end
 
 def rdoc_for_project(output_directory:, project_path:)
-  source_path = output_directory.join('source')
-  doc_destination_path = source_path + project_path.gsub(/^\//, '')
+  doc_destination_path = File.join(output_directory, 'source', project_path)
 
   FileUtils.mkdir_p doc_destination_path
   cmd = "bundle update && \
@@ -276,7 +275,7 @@ task :update_docs, [:version, :website_path, :branch] do |_t, args|
       end
 
     if ENV.fetch('NO_RDOC', '').empty?
-      rdoc_for_project(output_directory: output_directory, project_path: "/documentation/#{major}.#{minor}/#{project}/")
+      rdoc_for_project(output_directory: output_directory, project_path: File.join(%W[documentation #{major}.#{minor} #{project}]))
     end
 
     if ENV.fetch('NO_CUCUMBER', '').empty?
