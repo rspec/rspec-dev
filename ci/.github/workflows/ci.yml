@@ -55,7 +55,7 @@ jobs:
           - ruby: ruby-head
             env:
               RUBY_HEAD: true
-          - ruby: jruby-9.2.13.0
+          - ruby: jruby
             env:
               JRUBY_OPTS: "--dev"
           - ruby: 2.7
